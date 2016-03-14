@@ -1,0 +1,623 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Using plugins &mdash; Modoboa 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Modoboa 1.0.0 documentation" href="../index.html" />
+    <link rel="next" title="Dovecot and Postfix" href="../integration/imap_and_smtp.html" />
+    <link rel="prev" title="Configuration" href="configuration.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../integration/imap_and_smtp.html" title="Dovecot and Postfix"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="configuration.html" title="Configuration"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Modoboa 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="using-plugins">
+<h1>Using plugins<a class="headerlink" href="#using-plugins" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="enable-or-disable-a-plugin">
+<h2>Enable or disable a plugin<a class="headerlink" href="#enable-or-disable-a-plugin" title="Permalink to this headline">¶</a></h2>
+<p>Modoboa provides an online panel to control plugins activation. You
+will find it at <em>Modoboa &gt; Extensions</em>.</p>
+<p>To activate a plugin, check the corresponding box and click on the
+<em>Apply</em> button.</p>
+<p>To deactivate a plugin, uncheck the corresponding box and click on the
+<em>Apply</em> button.</p>
+</div>
+<div class="section" id="per-admin-limits">
+<h2>Per-admin limits<a class="headerlink" href="#per-admin-limits" title="Permalink to this headline">¶</a></h2>
+<p>This plugin offers a way to define limits about how many objects
+(aliases, mailboxes) a domain administrator can create.</p>
+<p>It also brings a new administrative role: <tt class="docutils literal"><span class="pre">Reseller</span></tt>. A reseller is a domain
+administrator that can also manipulate domains and assign permissions
+to domain administrators.</p>
+<p>If you don&#8217;t want to limit a particular object type, just set the
+associated value to -1.</p>
+<p>Default limits applied to new administrators can be changed through
+the <em>Modoboa &gt; Parameters &gt; Limits</em> page.</p>
+</div>
+<div class="section" id="amavisd-new-frontend">
+<span id="amavis-frontend"></span><h2>Amavisd-new frontend<a class="headerlink" href="#amavisd-new-frontend" title="Permalink to this headline">¶</a></h2>
+<p>This plugin provides a simple management frontend for <a class="reference external" href="http://www.amavis.org">amavisd-new</a>. The supported features are:</p>
+<ul class="simple">
+<li>SQL quarantine management : available to administrators or users,
+possibility to delete or release messages</li>
+<li>Per domain customization (using policies): specify how amavisd-new
+will handle traffic</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The per-domain policies feature only works for new
+installations. Currently, you can&#8217;t use modoboa with an existing
+database (ie. with data in <em>users</em> and <em>policies</em> tables).</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This plugin requires <em>amavisd-new</em> version <strong>2.7.0</strong> or higher. If
+you&#8217;re planning to use the <a class="reference internal" href="#selfservice"><em>Self-service mode</em></a>, you&#8217;ll need version
+<strong>2.8.0</strong>.</p>
+</div>
+<div class="section" id="database">
+<h3>Database<a class="headerlink" href="#database" title="Permalink to this headline">¶</a></h3>
+<p>You must tell to Modoboa where it can find the amavis
+database. Inside <em>settings.py</em>, add a new connection to the
+<tt class="docutils literal"><span class="pre">DATABASES</span></tt> variable like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">DATABASES</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="c"># Stuff before</span>
+  <span class="c">#</span>
+  <span class="s">&quot;amavis&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s">&quot;ENGINE&quot;</span> <span class="p">:</span> <span class="s">&quot;&lt;your value&gt;&quot;</span><span class="p">,</span>
+    <span class="s">&quot;HOST&quot;</span> <span class="p">:</span> <span class="s">&quot;&lt;your value&gt;&quot;</span><span class="p">,</span>
+    <span class="s">&quot;NAME&quot;</span> <span class="p">:</span> <span class="s">&quot;&lt;your value&gt;&quot;</span><span class="p">,</span>
+    <span class="s">&quot;USER&quot;</span> <span class="p">:</span> <span class="s">&quot;&lt;your value&gt;&quot;</span><span class="p">,</span>
+    <span class="s">&quot;PASSWORD&quot;</span> <span class="p">:</span> <span class="s">&quot;&lt;your value&gt;&quot;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Replace values between <tt class="docutils literal"><span class="pre">&lt;&gt;</span></tt> with yours.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Modoboa doesn&#8217;t create <em>amavis</em> tables. You need to install them
+following the <a class="reference external" href="http://www.amavis.org/#doc">official documentation</a>.</p>
+</div>
+<div class="section" id="cleanup">
+<h4>Cleanup<a class="headerlink" href="#cleanup" title="Permalink to this headline">¶</a></h4>
+<p>Storing quarantined messages to a database can quickly become a
+perfomance killer. Modoboa provides a simple script to periodically
+purge the quarantine database. To use it, add the following line
+inside root&#8217;s crontab:</p>
+<div class="highlight-python"><pre>0 0 * * * &lt;modoboa_site&gt;/manage.py qcleanup</pre>
+</div>
+<p>Replace <tt class="docutils literal"><span class="pre">modoboa_site</span></tt> with the path of your Modoboa instance.</p>
+<p>By default, messages older than 14 days are automatically purged. You
+can modify this value by changing the <tt class="docutils literal"><span class="pre">MAX_MESSAGES_AGE</span></tt> parameter
+in the online panel.</p>
+</div>
+</div>
+<div class="section" id="release-messages">
+<h3>Release messages<a class="headerlink" href="#release-messages" title="Permalink to this headline">¶</a></h3>
+<p>To release messages, first take a look at <a class="reference external" href="http://www.ijs.si/software/amavisd/amavisd-new-docs.html#quar-release">this page</a>. It
+explains how to configure <em>amavisd-new</em> to listen somewhere for the
+AM.PDP protocol. This protocol is used to send requests.</p>
+<p>Below is an example of a working configuration:</p>
+<div class="highlight-python"><pre>$interface_policy{'SOCK'} = 'AM.PDP-SOCK';
+$interface_policy{'9998'} = 'AM.PDP-INET';
+
+$policy_bank{'AM.PDP-SOCK'} = {
+  protocol =&gt; 'AM.PDP',
+  auth_required_release =&gt; 0,
+};
+$policy_bank{'AM.PDP-INET'} = {
+  protocol =&gt; 'AM.PDP',
+  inet_acl =&gt; [qw( 127.0.0.1 [::1] )],
+};</pre>
+</div>
+<p>Don&#8217;t forget to update the <tt class="docutils literal"><span class="pre">inet_acl</span></tt> list if you plan to release from
+the network.</p>
+<p>Once <em>amavisd-new</em> is configured, just tell Modoboa where it can find
+the <em>release server</em> by modifying the following parameters in the
+online panel:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="31%" />
+<col width="31%" />
+<col width="38%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Description</th>
+<th class="head">Default value</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Amavis connection
+mode</td>
+<td>Mode used to access
+the PDP server</td>
+<td>unix</td>
+</tr>
+<tr class="row-odd"><td>PDP server address</td>
+<td>PDP server address
+(if inet mode)</td>
+<td>localhost</td>
+</tr>
+<tr class="row-even"><td>PDP server port</td>
+<td>PDP server port (if
+inet mode) 9998</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>PDP server socket</td>
+<td>Path to the PDP
+server socket (if
+unix mode)</td>
+<td>/var/amavis/amavisd.sock</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="deferred-release">
+<h4>Deferred release<a class="headerlink" href="#deferred-release" title="Permalink to this headline">¶</a></h4>
+<p>By default, simple users are not allowed to release messages
+themselves. They are only allowed to send release requests to
+administrators.</p>
+<p>As administrators are not always available or logged into Modoboa, a
+notification tool is available. It sends reminder e-mails to every
+administrators or domain administrators. To use it, add the following
+example line to root&#8217;s crontab:</p>
+<div class="highlight-python"><pre>0 12 * * * &lt;modoboa_site&gt;/manage.py amnotify --baseurl='&lt;modoboa_url&gt;'</pre>
+</div>
+<p>You are free to change the frequency.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you want to let users release their messages alone (not
+recommended), go to the admin panel.</p>
+</div>
+<p>The following parameters are available to let you customize this
+feature:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="31%" />
+<col width="31%" />
+<col width="38%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Description</th>
+<th class="head">Default value</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Check requests
+interval</td>
+<td>Interval between two
+release requests
+checks</td>
+<td>30</td>
+</tr>
+<tr class="row-odd"><td>Allow direct release</td>
+<td>Allow users to
+directly release
+their messages</td>
+<td>no</td>
+</tr>
+<tr class="row-even"><td>Notifications sender</td>
+<td>The e-mail address
+used to send
+notitications</td>
+<td><a class="reference external" href="mailto:notification&#37;&#52;&#48;modoboa&#46;org">notification<span>&#64;</span>modoboa<span>&#46;</span>org</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="self-service-mode">
+<span id="selfservice"></span><h3>Self-service mode<a class="headerlink" href="#self-service-mode" title="Permalink to this headline">¶</a></h3>
+<p>The <em>self-service</em> mode let users act on quarantined messages without
+beeing authenticated. They can:</p>
+<ul class="simple">
+<li>View messages</li>
+<li>Remove messages</li>
+<li>Release messages (or send release requests)</li>
+</ul>
+<p>To access a specific message, they only need the following information:</p>
+<ul class="simple">
+<li>Message&#8217;s unique identifier</li>
+<li>Message&#8217;s secret identifier</li>
+</ul>
+<p>This information is controlled by <em>amavis</em>, which is in charge of
+notifying users when new messages are put into quarantine. Each
+notification (one per message) must embark a direct link containing
+the required identifiers.</p>
+<p>To activate this feature, go the administration panel and set the
+<strong>Enable self-service mode</strong> parameter to yes.</p>
+<p>The last step is to customize the notification messages <em>amavis</em>
+sends. The most important is to embark a direct link. Take a look at
+the <a class="reference external" href="http://amavis.org/README.customize.txt">README.customize</a> file to
+learn what you&#8217;re allowed to do.</p>
+<p>Here is a link example:</p>
+<div class="highlight-python"><pre>http://&lt;modoboa_url&gt;/quarantine/%i/?rcpt=%R&amp;secret_id=[:secret_id]</pre>
+</div>
+</div>
+</div>
+<div class="section" id="graphical-statistics">
+<span id="stats"></span><h2>Graphical statistics<a class="headerlink" href="#graphical-statistics" title="Permalink to this headline">¶</a></h2>
+<p>This plugin collects various statistics about emails traffic on your
+server. It parses a log file to collect information, store it into RRD
+files (see <a class="reference external" href="http://oss.oetiker.ch/rrdtool/">rrdtool</a>)and then
+generates graphics in PNG format.</p>
+<p>To use it, go to the online parameters panel and adapt the following
+ones to your environnement:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="30%" />
+<col width="30%" />
+<col width="39%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Description</th>
+<th class="head">Default value</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Path to the log file</td>
+<td>Path to log file
+used to collect
+statistics</td>
+<td>/var/log/mail.log</td>
+</tr>
+<tr class="row-odd"><td>Directory to store
+RRD files</td>
+<td>Path to directory
+where RRD files are
+stored</td>
+<td>/tmp/modoboa</td>
+</tr>
+<tr class="row-even"><td>Directory to store
+PNG files</td>
+<td>Path to directory
+where PNG files are
+stored</td>
+<td>&lt;modoboa_site&gt;/media/stats</td>
+</tr>
+</tbody>
+</table>
+<p>Make sure the directory that will contain RRD files exists. If not,
+create it before going further. For example (according to the previous
+parameters):</p>
+<div class="highlight-python"><pre>$ mkdir /tmp/modoboa</pre>
+</div>
+<p>To finish, you need to collect information periodically in order to
+feed the RRD files. Add the following line into root&#8217;s crontab:</p>
+<div class="highlight-python"><pre>*/5 * * * * &lt;modoboa_site&gt;/manage.py logparser &amp;&gt; /dev/null</pre>
+</div>
+<p>Replace <tt class="docutils literal"><span class="pre">&lt;modoboa_site&gt;</span></tt> with the path of your Modoboa instance.</p>
+<p>Graphics will be automatically created after each parsing.</p>
+</div>
+<div class="section" id="postifx-auto-reply-messages">
+<span id="postfix-ar"></span><h2>Postifx auto-reply messages<a class="headerlink" href="#postifx-auto-reply-messages" title="Permalink to this headline">¶</a></h2>
+<p>This plugin let users define an auto-reply message (<em>vacation</em>). It is
+based on <em>postfix</em> capabilities.</p>
+<p>The user that executes the autoreply script needs to access
+<em>settings.py</em>. You must apply proper permissions on this file. For
+example, if <em>settings.py</em> belongs to <em>www-data:www-data</em>, you can add
+the <em>vmail</em> user to the <em>www-data</em> group and set the read permission
+for the group.</p>
+<p>To make <em>postfix</em> use this feature, you need to update your
+configuration files as follows:</p>
+<p><tt class="docutils literal"><span class="pre">/etc/postfix/main.cf</span></tt>:</p>
+<div class="highlight-python"><pre>transport_maps = mysql:/etc/postfix/maps/sql-transport.cf
+virtual_alias_maps = mysql:/etc/postfix/maps/sql-aliases.cf
+        mysql:/etc/postfix/mapfiles/sql-domain-aliases-mailboxes.cf,
+        mysql:/etc/postfix/mapfiles/sql-email2email.cf,
+        mysql:/etc/postfix/maps/sql-autoreplies.cf,
+        mysql:/etc/postfix/mapfiles/sql-catchall-aliases.cf</pre>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The order used to define alias maps is important, please respect it</p>
+</div>
+<p><tt class="docutils literal"><span class="pre">/etc/postfix/master.cf</span></tt>:</p>
+<div class="highlight-python"><pre>autoreply unix        -       n       n       -       -       pipe
+          flags= user=vmail:&lt;group&gt; argv=&lt;modoboa_site&gt;/manage.py autoreply $sender $mailbox</pre>
+</div>
+<p><tt class="docutils literal"><span class="pre">&lt;modoboa_site&gt;</span></tt> is the path of your Modoboa instance.</p>
+<p>Then, create the requested map files:</p>
+<div class="highlight-python"><pre>$ modoboa-admin.py postfix_maps mapfiles --categories autoreply</pre>
+</div>
+<p><cite>mapfiles</cite> is the directory where the files will be stored. Answer the
+few questions and you&#8217;re done.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Auto-reply messages are just sent one time per sender for a
+pre-defined time period. By default, this period is equal to 1 day
+(86400s), you can adjust this value by modifying the <strong>Automatic
+reply timeout</strong> parameter available in the online panel.</p>
+</div>
+</div>
+<div class="section" id="sieve-filters">
+<h2>Sieve filters<a class="headerlink" href="#sieve-filters" title="Permalink to this headline">¶</a></h2>
+<p>This plugin let users create server-side message filters, using the
+<a class="reference external" href="http://pypi.python.org/pypi/sievelib">sievelib module</a> (which
+provides Sieve and ManageSieve clients).</p>
+<p>Two working modes are available:</p>
+<ul class="simple">
+<li>A raw mode: you create filters using the Sieve language directly
+(advanced users)</li>
+<li>An assisted mode: you create filters using an intuitive form</li>
+</ul>
+<p>To use this plugin, your hosting setup must include a <em>ManageSieve</em>
+server and your local delivery agent must understand the <em>Sieve</em>
+language. Don&#8217;t panic, <em>Dovecot</em> supports both :-) (refer to
+<a class="reference internal" href="../integration/imap_and_smtp.html#dovecot"><em>Dovecot</em></a> to know how to enable those features).</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The sieve filters plugin requires that the <a class="reference internal" href="#webmail"><em>Webmail</em></a> plugin is
+activated and configured.</p>
+</div>
+<p>Go the online panel and modify the following parameters in order to
+communicate with the <em>ManageSieve</em> server:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Description</th>
+<th class="head">Default value</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Server address</td>
+<td>Address of your
+MANAGESIEVE server</td>
+<td>127.0.0.1</td>
+</tr>
+<tr class="row-odd"><td>Server port</td>
+<td>Listening port of
+your MANAGESIEVE
+server</td>
+<td>4190</td>
+</tr>
+<tr class="row-even"><td>Connect using
+STARTTLS</td>
+<td>Use the STARTTLS
+extension</td>
+<td>no</td>
+</tr>
+<tr class="row-odd"><td>Authentication
+mechanism</td>
+<td>Prefered
+authentication
+mechanism</td>
+<td>auto</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="webmail">
+<span id="id1"></span><h2>Webmail<a class="headerlink" href="#webmail" title="Permalink to this headline">¶</a></h2>
+<p>Modoboa provides a simple webmail:</p>
+<ul class="simple">
+<li>Browse, read and compose messages, attachments are supported</li>
+<li>HTML messages are supported</li>
+<li><a class="reference external" href="http://ckeditor.com/">CKeditor</a> integration</li>
+<li>Manipulate mailboxes (create, move, remove)</li>
+<li>Quota display</li>
+</ul>
+<p>To use it, go to the online panel and modify the following parameters
+to communicate with your <em>IMAP</em> server (under <em>IMAP settings</em>):</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Description</th>
+<th class="head">Default value</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Server address</td>
+<td>Address of your IMAP
+server</td>
+<td>127.0.0.1</td>
+</tr>
+<tr class="row-odd"><td>Use a secured
+connection</td>
+<td>Use a secured
+connection to access
+IMAP server</td>
+<td>no</td>
+</tr>
+<tr class="row-even"><td>Server port</td>
+<td>Listening port of
+your IMAP server</td>
+<td>143</td>
+</tr>
+</tbody>
+</table>
+<p>Do the same to communicate with your SMTP server (under <em>SMTP settings</em>):</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Description</th>
+<th class="head">Default value</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Server address</td>
+<td>Address of your SMTP
+server</td>
+<td>127.0.0.1</td>
+</tr>
+<tr class="row-odd"><td>Secured connection
+mode</td>
+<td>Use a secured
+connection to access
+SMTP server</td>
+<td>None</td>
+</tr>
+<tr class="row-even"><td>Server port</td>
+<td>Listening port of
+your SMTP server</td>
+<td>25</td>
+</tr>
+<tr class="row-odd"><td>Authentication
+required</td>
+<td>Server needs
+authentication</td>
+<td>no</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The size of each attachment sent with messages is limited. You can
+change the default value by modifying the <strong>Maximum attachment
+size</strong> parameter.</p>
+</div>
+<div class="section" id="using-ckeditor">
+<h3>Using CKeditor<a class="headerlink" href="#using-ckeditor" title="Permalink to this headline">¶</a></h3>
+<p>Modoboa supports CKeditor to compose HTML messages. To use it, first
+download it from <a class="reference external" href="http://ckeditor.com/">the official website</a>, then
+extract the tarball:</p>
+<div class="highlight-python"><pre>$ cd &lt;modoboa_site_dir&gt;
+$ tar xzf /path/to/ckeditor/tarball.tag.gz -C sitestatic/js/</pre>
+</div>
+<p>And you&#8217;re done!</p>
+<p>Now, each user has the possibility to choose between CKeditor and the
+raw text editor to compose their messages. (see <em>User &gt; Settings &gt;
+Preferences &gt; Webmail</em>)</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Using plugins</a><ul>
+<li><a class="reference internal" href="#enable-or-disable-a-plugin">Enable or disable a plugin</a></li>
+<li><a class="reference internal" href="#per-admin-limits">Per-admin limits</a></li>
+<li><a class="reference internal" href="#amavisd-new-frontend">Amavisd-new frontend</a><ul>
+<li><a class="reference internal" href="#database">Database</a><ul>
+<li><a class="reference internal" href="#cleanup">Cleanup</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#release-messages">Release messages</a><ul>
+<li><a class="reference internal" href="#deferred-release">Deferred release</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#self-service-mode">Self-service mode</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#graphical-statistics">Graphical statistics</a></li>
+<li><a class="reference internal" href="#postifx-auto-reply-messages">Postifx auto-reply messages</a></li>
+<li><a class="reference internal" href="#sieve-filters">Sieve filters</a></li>
+<li><a class="reference internal" href="#webmail">Webmail</a><ul>
+<li><a class="reference internal" href="#using-ckeditor">Using CKeditor</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="configuration.html"
+                        title="previous chapter">Configuration</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../integration/imap_and_smtp.html"
+                        title="next chapter">Dovecot and Postfix</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/getting_started/plugins.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../integration/imap_and_smtp.html" title="Dovecot and Postfix"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="configuration.html" title="Configuration"
+             >previous</a> |</li>
+        <li><a href="../index.html">Modoboa 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

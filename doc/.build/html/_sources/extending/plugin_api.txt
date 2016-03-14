@@ -1,0 +1,132 @@
+###################
+Adding a new plugin
+###################
+
+************
+Introduction
+************
+
+Modoboa offers a plugin API to expand its capabilities. The current
+implementation provides the following possibilities:
+
+* Expand navigation by adding entry points to your plugin inside the GUI
+* Access and modify administrative objects (domains, mailboxes, etc.)
+* Register callback actions for specific events
+
+Plugins are nothing more than Django applications with an extra piece
+of code that integrates them into Modoboa. Usually, the *__init__.py* file
+will contain a complete description of the plugin:
+
+* Admin and user parameters
+* Observed events
+* Custom menu entries
+
+The communication between both applications is provided by
+:ref:`events`. Modoboa offers some kind of hooks to let plugin add custom
+actions.
+
+The following subsections describe plugin architecture and explain
+how you can create your own plugin.
+
+*****************
+The required glue
+*****************
+
+To create a new plugin, just start a new django application like
+this (into modoboa's directory)::
+
+  $ python manage.py startapp
+
+Then, you need to register this application using the provided
+API. Just copy/paste the following example into the *__init__.py* file
+of the future extension::
+
+  from modoboa.extensions import ModoExtension, exts_pool
+  
+  class MyExtension(ModoExtension):
+      name = "myext"
+      label = "My Extension"
+      version = "0.1"
+      description = "A description"
+      url = "myext_root_location" # optional, name is used if not defined
+      
+      def init(self):
+          """This method is called when the extension is activated.
+          """
+          pass
+          
+      def load(self):
+          """This method is called when Modoboa loads available and activated plugins.
+
+          Declare parameters and register events here.
+          """ 
+          pass
+          
+      def destroy(self):
+          """This function is called when a plugin is disabled from the interface.
+          
+          Unregister parameters and events here.
+          """
+          pass
+
+  exts_pool.register_extension(MyExtension)
+
+Once done, simply add your plugin's module name to the
+``INSTALLED_APPS`` variable located inside *settings.py*. Optionaly,
+run ``python manage.py syncdb`` if your plugin provides custom tables
+and ``python manage.py collectstatic`` to update static files.
+
+**********
+Parameters
+**********
+
+A plugin can declare its own parameters. There are two levels available:
+
+* 'Administration' parameters : used to configure the plugin, editable
+  inside the *Admin > Settings > Parameters* page,
+* 'User' parameters : per-user parameters (or preferences), editable
+  inside the *Options > Preferences* page.
+
+Playing with parameters
+=======================
+
+To declare a new administration parameter, use the following function::
+
+  from modoboa.lib import parameters
+
+  parameters.register_admin(name, **kwargs)
+
+To declare a new user parameter, use the following function::
+
+  parameter.register_user(name, **kwargs)
+
+Both functions accept extra arguments listed here:
+
+* ``type`` : parameter's type, possible values are : ``int``, ``string``, ``list``, ``list_yesno``,
+* ``deflt`` : default value,
+* ``help`` : help text,
+* ``values`` : list of possible values if ``type`` is ``list``.
+
+To undeclare parameters (for example when a plugin is disabled is
+disabled from the interface), use the following function::
+
+  parameters.unregister_app(appname)
+
+``appname`` corresponds to your plugin's name, ie. the name of the
+directory containing the source code.
+
+***************************
+Custom administrative roles
+***************************
+
+Modoboa uses Django's internal permission system. Administrative roles
+are nothing more than groups (``Group`` instances).
+
+If an extension needs to add new roles, it needs to follow those steps:
+
+#. Create a new ``Group`` instance. It can be done by providing
+   `fixtures <https://docs.djangoproject.com/en/dev/howto/initial-data/>`_ 
+   or by creating it into the extension ``init`` function
+
+#. A a new listener for the :ref:`getextraroles` event that will return
+   the group's name

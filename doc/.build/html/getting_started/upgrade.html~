@@ -1,0 +1,716 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Upgrading an existing installation &mdash; Modoboa 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Modoboa 1.0.0 documentation" href="../index.html" />
+    <link rel="next" title="Configuration" href="configuration.html" />
+    <link rel="prev" title="Installation" href="install.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="configuration.html" title="Configuration"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="install.html" title="Installation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Modoboa 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="upgrading-an-existing-installation">
+<h1>Upgrading an existing installation<a class="headerlink" href="#upgrading-an-existing-installation" title="Permalink to this headline">¶</a></h1>
+<p>This section contains all the upgrade procedures required to use
+newest versions of Modoboa.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Before running a migration, we recommend that you make
+a copy of your existing database.</p>
+</div>
+<div class="section" id="latest-version">
+<span id="latestversion"></span><h2>Latest version<a class="headerlink" href="#latest-version" title="Permalink to this headline">¶</a></h2>
+<p>Starting with version 0.9.1, Modoboa comes as a standard django
+application. Fetch the latest version (see <a class="reference internal" href="install.html#get-modoboa"><em>Get Modoboa</em></a>) and
+install it.</p>
+<p><tt class="docutils literal"><span class="pre">pip</span></tt> users, just run the following command:</p>
+<div class="highlight-python"><pre>$ pip install --upgrade modoboa</pre>
+</div>
+<p>Then, refer to this page to check if the version you&#8217;re installing
+requires specific operations. If the version you&#8217;re looking for is not
+present, it means nothing special is required.</p>
+<p>Finally, follow the common procedure:</p>
+<div class="highlight-python"><pre>$ cd &lt;modoboa_instance_dir&gt;
+$ python manage.py syncdb --migrate
+$ python manage.py collectstatic</pre>
+</div>
+<div class="section" id="production-ready-at-last">
+<h3>1.0.0: production ready, at last<a class="headerlink" href="#production-ready-at-last" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="configuration-file-update">
+<h4>Configuration file update<a class="headerlink" href="#configuration-file-update" title="Permalink to this headline">¶</a></h4>
+<p>Several modifications need to be done into <em>settings.py</em>.</p>
+<ol class="arabic">
+<li><p class="first">Add the following import statement:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">logging.handlers</span> <span class="kn">import</span> <span class="n">SysLogHandler</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Set the <tt class="docutils literal"><span class="pre">ALLOWER_HOSTS</span></tt> variable:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">ALLOWED_HOSTS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s">&#39;&lt;your server fqdn&gt;&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Activate the <tt class="docutils literal"><span class="pre">django.middleware.csrf.CsrfViewMiddleware</span></tt>
+middleware and add the <tt class="docutils literal"><span class="pre">reversion.middleware.RevisionMiddleware</span></tt>
+middleware to <tt class="docutils literal"><span class="pre">MIDDLEWARE_CLASSES</span></tt> like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">MIDDLEWARE_CLASSES</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s">&#39;django.middleware.common.CommonMiddleware&#39;</span><span class="p">,</span>
+    <span class="s">&#39;django.contrib.sessions.middleware.SessionMiddleware&#39;</span><span class="p">,</span>
+    <span class="s">&#39;django.middleware.csrf.CsrfViewMiddleware&#39;</span><span class="p">,</span>
+    <span class="s">&#39;django.contrib.auth.middleware.AuthenticationMiddleware&#39;</span><span class="p">,</span>
+    <span class="s">&#39;django.contrib.messages.middleware.MessageMiddleware&#39;</span><span class="p">,</span>
+    <span class="s">&#39;django.middleware.locale.LocaleMiddleware&#39;</span><span class="p">,</span>
+    <span class="c"># Uncomment the next line for simple clickjacking protection:</span>
+    <span class="c"># &#39;django.middleware.clickjacking.XFrameOptionsMiddleware&#39;,</span>
+    <span class="s">&#39;reversion.middleware.RevisionMiddleware&#39;</span><span class="p">,</span>
+
+    <span class="s">&#39;modoboa.lib.middleware.AjaxLoginRedirect&#39;</span><span class="p">,</span>
+    <span class="s">&#39;modoboa.lib.middleware.CommonExceptionCatcher&#39;</span><span class="p">,</span>
+    <span class="s">&#39;modoboa.lib.middleware.ExtControlMiddleware&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Add the <tt class="docutils literal"><span class="pre">reversion</span></tt> application to <tt class="docutils literal"><span class="pre">INSTALLED_APPS</span></tt></p>
+</li>
+<li><p class="first">Remove all modoboa&#8217;s application from <tt class="docutils literal"><span class="pre">INSTALLED_APPS</span></tt> and put
+them into the new <tt class="docutils literal"><span class="pre">MODOBOA_APPS</span></tt> variable like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">INSTALLED_APPS</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s">&#39;django.contrib.auth&#39;</span><span class="p">,</span>
+    <span class="s">&#39;django.contrib.contenttypes&#39;</span><span class="p">,</span>
+    <span class="s">&#39;django.contrib.sessions&#39;</span><span class="p">,</span>
+    <span class="s">&#39;django.contrib.sites&#39;</span><span class="p">,</span>
+    <span class="s">&#39;django.contrib.messages&#39;</span><span class="p">,</span>
+    <span class="s">&#39;django.contrib.staticfiles&#39;</span><span class="p">,</span>
+    <span class="s">&#39;south&#39;</span><span class="p">,</span>
+    <span class="s">&#39;reversion&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c"># A dedicated place to register Modoboa applications</span>
+<span class="c"># Do not delete it.</span>
+<span class="c"># Do not change the order.</span>
+<span class="n">MODOBOA_APPS</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s">&#39;modoboa&#39;</span><span class="p">,</span>
+    <span class="s">&#39;modoboa.auth&#39;</span><span class="p">,</span>
+    <span class="s">&#39;modoboa.admin&#39;</span><span class="p">,</span>
+    <span class="s">&#39;modoboa.lib&#39;</span><span class="p">,</span>
+    <span class="s">&#39;modoboa.userprefs&#39;</span><span class="p">,</span>
+
+    <span class="s">&#39;modoboa.extensions.limits&#39;</span><span class="p">,</span>
+    <span class="s">&#39;modoboa.extensions.postfix_autoreply&#39;</span><span class="p">,</span>
+    <span class="s">&#39;modoboa.extensions.webmail&#39;</span><span class="p">,</span>
+    <span class="s">&#39;modoboa.extensions.stats&#39;</span><span class="p">,</span>
+    <span class="s">&#39;modoboa.extensions.amavis&#39;</span><span class="p">,</span>
+    <span class="s">&#39;modoboa.extensions.sievefilters&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">INSTALLED_APPS</span> <span class="o">+=</span> <span class="n">MODOBOA_APPS</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Set the <tt class="docutils literal"><span class="pre">AUTH_USER_MODEL</span></tt> variable like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">AUTH_USER_MODEL</span> <span class="o">=</span> <span class="s">&#39;admin.User&#39;</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Modify the logging configuration as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">LOGGING</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&#39;version&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s">&#39;disable_existing_loggers&#39;</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span>
+    <span class="s">&#39;filters&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&#39;require_debug_false&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">&#39;()&#39;</span><span class="p">:</span> <span class="s">&#39;django.utils.log.RequireDebugFalse&#39;</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s">&#39;formatters&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&#39;syslog&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">&#39;format&#39;</span><span class="p">:</span> <span class="s">&#39;</span><span class="si">%(name)s</span><span class="s">: </span><span class="si">%(levelname)s</span><span class="s"> </span><span class="si">%(message)s</span><span class="s">&#39;</span>
+        <span class="p">},</span>
+    <span class="p">},</span>
+    <span class="s">&#39;handlers&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&#39;mail_admins&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">&#39;level&#39;</span><span class="p">:</span> <span class="s">&#39;ERROR&#39;</span><span class="p">,</span>
+            <span class="s">&#39;filters&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;require_debug_false&#39;</span><span class="p">],</span>
+            <span class="s">&#39;class&#39;</span><span class="p">:</span> <span class="s">&#39;django.utils.log.AdminEmailHandler&#39;</span>
+        <span class="p">},</span>
+        <span class="s">&#39;console&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="c"># logging handler that outputs log messages to terminal</span>
+            <span class="s">&#39;class&#39;</span><span class="p">:</span> <span class="s">&#39;logging.StreamHandler&#39;</span><span class="p">,</span>
+            <span class="c">#&#39;level&#39;: &#39;DEBUG&#39;, # message level to be written to console</span>
+        <span class="p">},</span>
+        <span class="s">&#39;syslog-auth&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">&#39;class&#39;</span><span class="p">:</span> <span class="s">&#39;logging.handlers.SysLogHandler&#39;</span><span class="p">,</span>
+            <span class="s">&#39;facility&#39;</span><span class="p">:</span> <span class="n">SysLogHandler</span><span class="o">.</span><span class="n">LOG_AUTH</span><span class="p">,</span>
+            <span class="s">&#39;formatter&#39;</span><span class="p">:</span> <span class="s">&#39;syslog&#39;</span>
+        <span class="p">},</span>
+        <span class="s">&#39;modoboa&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">&#39;class&#39;</span><span class="p">:</span> <span class="s">&#39;modoboa.lib.logutils.SQLHandler&#39;</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s">&#39;loggers&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&#39;django.request&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">&#39;handlers&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;mail_admins&#39;</span><span class="p">],</span>
+            <span class="s">&#39;level&#39;</span><span class="p">:</span> <span class="s">&#39;ERROR&#39;</span><span class="p">,</span>
+            <span class="s">&#39;propagate&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="s">&#39;modoboa.auth&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">&#39;handlers&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;syslog-auth&#39;</span><span class="p">,</span> <span class="s">&#39;modoboa&#39;</span><span class="p">],</span>
+            <span class="s">&#39;level&#39;</span><span class="p">:</span> <span class="s">&#39;INFO&#39;</span><span class="p">,</span>
+            <span class="s">&#39;propagate&#39;</span><span class="p">:</span> <span class="bp">False</span>
+        <span class="p">},</span>
+        <span class="s">&#39;modoboa.admin&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">&#39;handlers&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;modoboa&#39;</span><span class="p">],</span>
+            <span class="s">&#39;level&#39;</span><span class="p">:</span> <span class="s">&#39;INFO&#39;</span><span class="p">,</span>
+            <span class="s">&#39;propagate&#39;</span><span class="p">:</span> <span class="bp">False</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="postfix-and-dovecot-configuration-update">
+<h4>Postfix and Dovecot configuration update<a class="headerlink" href="#postfix-and-dovecot-configuration-update" title="Permalink to this headline">¶</a></h4>
+<p>It is necessary to update the queries used to retrieve users and mailboxes:</p>
+<ol class="arabic simple">
+<li>Replace all occurences of <tt class="docutils literal"><span class="pre">auth_user</span></tt> by <tt class="docutils literal"><span class="pre">admin_user</span></tt></li>
+<li>Into <em>dovecot-sql.conf</em>, update the <tt class="docutils literal"><span class="pre">user_query</span></tt> query, refer to
+<a class="reference internal" href="../integration/imap_and_smtp.html#dovecot-mysql-queries"><em>MySQL users</em></a> or <a class="reference internal" href="../integration/imap_and_smtp.html#dovecot-pg-queries"><em>PostgreSQL users</em></a></li>
+<li>Update dovecot&#8217;s configuration to activate the new <a class="reference internal" href="../integration/imap_and_smtp.html#dovecot-quota"><em>quota related features</em></a></li>
+</ol>
+</div>
+<div class="section" id="migration-issues">
+<h4>Migration issues<a class="headerlink" href="#migration-issues" title="Permalink to this headline">¶</a></h4>
+<p>When running the <tt class="docutils literal"><span class="pre">python</span> <span class="pre">manage.py</span> <span class="pre">syncdb</span> <span class="pre">--migrate</span></tt> command, you
+may encounter the following issues:</p>
+<ol class="arabic">
+<li><p class="first">Remove useless content types</p>
+<p>If the script asks you this question, just reply <strong>no</strong>.</p>
+</li>
+<li><p class="first">South fails to migrate <tt class="docutils literal"><span class="pre">reversion</span></tt></p>
+<p>Due to the admin user model change, the script <em>0001_initial.py</em>
+may fail. Just deactivate <tt class="docutils literal"><span class="pre">reversion</span></tt> from <tt class="docutils literal"><span class="pre">INSTALLED_APPS</span></tt> and
+run the command again. Once done, reactivate <tt class="docutils literal"><span class="pre">reversion</span></tt> and run
+the command one last time.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="section" id="administrative-panel-performance-improved">
+<h3>0.9.4: administrative panel performance improved<a class="headerlink" href="#administrative-panel-performance-improved" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic simple">
+<li>Edit the <em>settings.py</em> file and remove
+<tt class="docutils literal"><span class="pre">'django.contrib.auth.backends.ModelBackend'</span></tt> from the
+<tt class="docutils literal"><span class="pre">AUTHENTICATION_BACKENDS</span></tt> variable</li>
+</ol>
+</div>
+<div class="section" id="standard-django-application-and-more">
+<h3>0.9.1: standard django application and more<a class="headerlink" href="#standard-django-application-and-more" title="Permalink to this headline">¶</a></h3>
+<p>For this version, we recommend to install a new instance (see
+<a class="reference internal" href="install.html#deployment"><em>Deployment</em></a>) in a different directory.</p>
+<p>Then, copy the following content from the old installation to the new
+one:</p>
+<ul class="simple">
+<li>The <tt class="docutils literal"><span class="pre">media</span></tt> directory</li>
+<li>The directory containing RRD files if you use the <a class="reference internal" href="plugins.html#stats"><em>Graphical statistics</em></a> plugin</li>
+</ul>
+<p>Don&#8217;t copy the old <em>settings.py</em> file, just keep the new one and
+modify it (see <a class="reference internal" href="install.html#database"><em>Database</em></a> and <a class="reference internal" href="configuration.html#timezone-lang"><em>Time zone and language</em></a>).</p>
+<p>Migrate your database (see <a class="reference internal" href="#latestversion"><em>Latest version</em></a>).</p>
+<p>Finally, check the <a class="reference internal" href="plugins.html#amavis-frontend"><em>Amavisd-new frontend</em></a>, <a class="reference internal" href="plugins.html#postfix-ar"><em>Postifx auto-reply messages</em></a> and
+<a class="reference internal" href="plugins.html#stats"><em>Graphical statistics</em></a> chapters (depending on those you use) because the
+provided cron scripts have been changed, you must update the way you
+call them.</p>
+</div>
+</div>
+<div class="section" id="modoboa-0-9-and-prior">
+<h2>Modoboa 0.9 and prior<a class="headerlink" href="#modoboa-0-9-and-prior" title="Permalink to this headline">¶</a></h2>
+<p>First, decompress the new tarball at the same location than your
+current installation. Then, check if the new version you&#8217;re installing
+requires a migration.</p>
+<div class="section" id="global-ui-refactoring-new-limits-extension-and-more">
+<h3>0.9: global UI refactoring, new <em>limits</em> extension and more<a class="headerlink" href="#global-ui-refactoring-new-limits-extension-and-more" title="Permalink to this headline">¶</a></h3>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This version requires at least django 1.3. Make sure to update your
+version before starting to migrate.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Many files have been renamed/removed for this version. I recommend
+that you backup important files (<em>settings.py</em>, etc.) elsewhere
+(ie. <em>/tmp</em> for example). Then, remove the <em>modoboa</em> directory,
+extract the new tarball at the same place, rename the new directory
+to <em>modoboa</em> and copy the files you&#8217;ve just backup into it.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If the first super administrator you created is named <tt class="docutils literal"><span class="pre">admin</span></tt>,
+its password will be changed to <tt class="docutils literal"><span class="pre">password</span></tt> at the end of this
+upgrade. Don&#8217;t forget to modify it!</p>
+</div>
+<ol class="arabic">
+<li><p class="first">Edit the <em>settings.py</em> file and update the following variables
+(just copy/paste their new content):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">MIDDLEWARE_CLASSES</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s">&#39;django.middleware.common.CommonMiddleware&#39;</span><span class="p">,</span>
+    <span class="s">&#39;django.contrib.sessions.middleware.SessionMiddleware&#39;</span><span class="p">,</span>
+    <span class="s">&#39;django.contrib.auth.middleware.AuthenticationMiddleware&#39;</span><span class="p">,</span>
+    <span class="s">&#39;django.contrib.messages.middleware.MessageMiddleware&#39;</span><span class="p">,</span>
+    <span class="s">&#39;django.middleware.locale.LocaleMiddleware&#39;</span><span class="p">,</span>
+    <span class="s">&#39;modoboa.lib.middleware.AjaxLoginRedirect&#39;</span><span class="p">,</span>
+    <span class="s">&#39;modoboa.lib.middleware.CommonExceptionCatcher&#39;</span><span class="p">,</span>
+    <span class="s">&#39;modoboa.lib.middleware.ExtControlMiddleware&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">AUTHENTICATION_BACKENDS</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s">&#39;modoboa.lib.authbackends.SimpleBackend&#39;</span><span class="p">,</span>
+    <span class="s">&#39;django.contrib.auth.backends.ModelBackend&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Add <tt class="docutils literal"><span class="pre">django.contrib.staticfiles</span></tt> to <tt class="docutils literal"><span class="pre">INSTALLED_APPS</span></tt></p>
+</li>
+<li><p class="first">Add the following new variables:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">STATIC_ROOT</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">MODOBOA_DIR</span><span class="p">,</span> <span class="s">&#39;sitestatic&#39;</span><span class="p">)</span>
+<span class="n">STATIC_URL</span> <span class="o">=</span> <span class="s">&#39;/sitestatic/&#39;</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Update the following variables (just copy/paste their new values):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">MEDIA_ROOT</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">MODOBOA_DIR</span><span class="p">,</span> <span class="s">&#39;media&#39;</span><span class="p">)</span>
+<span class="n">MEDIA_URL</span> <span class="o">=</span> <span class="s">&#39;/media/&#39;</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first"><strong>For MySQL users only</strong>, add the following option to your database
+configuration:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">DATABASES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&quot;default&quot;</span> <span class="p">:</span> <span class="p">{</span>
+        <span class="c"># ...</span>
+        <span class="c"># MySQL users only</span>
+        <span class="s">&quot;OPTIONS&quot;</span> <span class="p">:</span> <span class="p">{</span>
+            <span class="s">&quot;init_command&quot;</span> <span class="p">:</span> <span class="s">&quot;SET foreign_key_checks = 0;&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Add <tt class="docutils literal"><span class="pre">'modoboa.extensions.limits'</span></tt> to <tt class="docutils literal"><span class="pre">INSTALLED_APPS</span></tt></p>
+</li>
+<li><p class="first">Update your database (make sure to create a backup before launching
+the following command):</p>
+<div class="highlight-python"><pre>$ ./manage.py syncdb --migrate</pre>
+</div>
+</li>
+<li><p class="first">Run the following command to initialize the directory that contains
+static files:</p>
+<div class="highlight-python"><pre>$ ./manage.py collectstatic</pre>
+</div>
+</li>
+<li><p class="first">If you are using the <em>stats</em> extension, please rename the
+<em>&lt;modoboa_dir&gt;/static/stats</em> directory to <em>&lt;modoboa_dir&gt;/media/stats</em>
+and change the value of the <tt class="docutils literal"><span class="pre">IMG_ROOTDIR</span></tt> parameter (go to the adminstration panel)</p>
+</li>
+<li><p class="first">Restart the python instance(s) that serve <em>Modoboa</em></p>
+</li>
+<li><p class="first">Log into Modoboa, go to <em>Modoboa &gt; Extensions</em>, uncheck all
+extensions, save. Then, check the extensions you want to use and
+save again</p>
+</li>
+<li><p class="first">Update your webserver configuration to make static files available
+(see <a class="reference internal" href="../integration/web_servers.html#webservers"><em>Web servers</em></a>)</p>
+</li>
+<li><p class="first"><strong>For Dovecot users only</strong>, you need to modify the
+<tt class="docutils literal"><span class="pre">password_query</span></tt> (file <em>/etc/dovecot/dovecot-sql.conf</em> by default
+on a Debian system) like this:</p>
+<div class="highlight-python"><pre>password_query = SELECT email AS user, password FROM auth_user WHERE email='%u'</pre>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="csv-import-feature-and-minor-fixes">
+<h3>0.8.8: CSV import feature and minor fixes<a class="headerlink" href="#csv-import-feature-and-minor-fixes" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic">
+<li><p class="first">Edit the <em>settings.py</em> file and add
+<tt class="docutils literal"><span class="pre">'modoboa.lib.middleware.AjaxLoginRedirect'</span></tt> to the
+<tt class="docutils literal"><span class="pre">MIDDLEWARE_CLASSES</span></tt> variable like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">MIDDLEWARE_CLASSES</span> <span class="o">=</span> <span class="p">(</span>
+  <span class="s">&#39;django.middleware.common.CommonMiddleware&#39;</span><span class="p">,</span>
+  <span class="s">&#39;django.contrib.sessions.middleware.SessionMiddleware&#39;</span><span class="p">,</span>
+  <span class="s">&#39;django.contrib.auth.middleware.AuthenticationMiddleware&#39;</span><span class="p">,</span>
+  <span class="s">&#39;django.contrib.messages.middleware.MessageMiddleware&#39;</span><span class="p">,</span>
+  <span class="s">&#39;django.middleware.locale.LocaleMiddleware&#39;</span><span class="p">,</span>
+  <span class="s">&#39;modoboa.lib.middleware.AjaxLoginRedirect&#39;</span><span class="p">,</span>
+  <span class="s">&#39;modoboa.lib.middleware.ExtControlMiddleware&#39;</span><span class="p">,</span>
+  <span class="s">&#39;modoboa.extensions.webmail.middleware.WebmailErrorMiddleware&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Still inside <em>settings.py</em>, modify the <tt class="docutils literal"><span class="pre">DATABASE_ROUTERS</span></tt>
+variable like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">DATABASE_ROUTERS</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;modoboa.extensions.amavis_quarantine.dbrouter.AmavisRouter&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="per-user-language-selection">
+<h3>0.8.7: per-user language selection<a class="headerlink" href="#per-user-language-selection" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic">
+<li><p class="first">Edit the <em>settings.py</em> file and add the
+<tt class="docutils literal"><span class="pre">'django.middleware.locale.LocaleMiddleware'</span></tt> middleware to the
+<tt class="docutils literal"><span class="pre">MIDDLEWARE_CLASSES</span></tt> variable like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">MIDDLEWARE_CLASSES</span> <span class="o">=</span> <span class="p">(</span>
+  <span class="s">&#39;django.middleware.common.CommonMiddleware&#39;</span><span class="p">,</span>
+  <span class="s">&#39;django.contrib.sessions.middleware.SessionMiddleware&#39;</span><span class="p">,</span>
+  <span class="s">&#39;django.contrib.auth.middleware.AuthenticationMiddleware&#39;</span><span class="p">,</span>
+  <span class="s">&#39;django.contrib.messages.middleware.MessageMiddleware&#39;</span><span class="p">,</span>
+  <span class="s">&#39;django.middleware.locale.LocaleMiddleware&#39;</span><span class="p">,</span>
+  <span class="s">&#39;modoboa.lib.middleware.ExtControlMiddleware&#39;</span><span class="p">,</span>
+  <span class="s">&#39;modoboa.extensions.webmail.middleware.WebmailErrorMiddleware&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">To select a custom language, go to <em>Options &gt; Preferences</em> and
+select the <tt class="docutils literal"><span class="pre">general</span></tt> section. Choose a value, save and disconnect
+from Modoboa. On the next login, the desired language will be used.</p>
+</li>
+</ol>
+</div>
+<div class="section" id="maintenance-release">
+<h3>0.8.6.1: maintenance release<a class="headerlink" href="#maintenance-release" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic">
+<li><p class="first">If you have tried to create a new mailbox and if you have
+encountered the following <a class="reference external" href="http://dev.modoboa.org/ticket/163">issue</a>, you must run the
+<tt class="docutils literal"><span class="pre">dbcleanup.py</span></tt> script in order to remove orphan records:</p>
+<div class="highlight-python"><pre>$ cd &lt;modoboa_dir&gt;
+$ PYTHONPATH=$PWD/.. DJANGO_SETTINGS_MODULE=modoboa.settings ./admin/scripts/dbcleanup.py</pre>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="quarantine-plugin-refactoring-using-django-s-orm">
+<h3>0.8.6: Quarantine plugin refactoring (using Django&#8217;s ORM)<a class="headerlink" href="#quarantine-plugin-refactoring-using-django-s-orm" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic">
+<li><p class="first">Just update your configuration if you are using the quarantine
+plugin. Open <em>settings.py</em>, move the database configuration from
+the <tt class="docutils literal"><span class="pre">DB_CONNECTIONS</span></tt> variable to the <tt class="docutils literal"><span class="pre">DATABASES</span></tt> variable, like
+this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">DATABASES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&quot;default&quot;</span> <span class="p">:</span> <span class="p">{</span>
+        <span class="c"># The default database configuration</span>
+    <span class="p">},</span>
+    <span class="c">#    ...</span>
+    <span class="s">&quot;amavis&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&quot;ENGINE&quot;</span> <span class="p">:</span> <span class="s">&quot;&lt;your value&gt;&quot;</span><span class="p">,</span>
+        <span class="s">&quot;HOST&quot;</span> <span class="p">:</span> <span class="s">&quot;&lt;your value&gt;&quot;</span><span class="p">,</span>
+        <span class="s">&quot;NAME&quot;</span> <span class="p">:</span> <span class="s">&quot;&lt;your value&gt;&quot;</span><span class="p">,</span>
+        <span class="s">&quot;USER&quot;</span> <span class="p">:</span> <span class="s">&quot;&lt;your value&gt;&quot;</span><span class="p">,</span>
+        <span class="s">&quot;PASSWORD&quot;</span> <span class="p">:</span> <span class="s">&quot;&lt;your value&gt;&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Add the new following variable somewhere in the file:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">DATABASE_ROUTERS</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;modoboa.extensions.amavis_quarantine.dbrouter.AmavisRouter&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Remove the deprecated <tt class="docutils literal"><span class="pre">DB_CONNECTIONS</span></tt> variable from <em>settings.py</em>.</p>
+</li>
+</ol>
+</div>
+<div class="section" id="new-sieve-filters-plugin-improved-admin-app">
+<h3>0.8.5: new &#8220;Sieve filters&#8221; plugin, improved admin app<a class="headerlink" href="#new-sieve-filters-plugin-improved-admin-app" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic">
+<li><p class="first">Migrate the <tt class="docutils literal"><span class="pre">lib</span></tt> and <tt class="docutils literal"><span class="pre">admin</span></tt> applications:</p>
+<div class="highlight-python"><pre>$ python manage.py migrate lib
+$ python manage.py migrate admin</pre>
+</div>
+</li>
+<li><p class="first">Add <tt class="docutils literal"><span class="pre">modoboa.auth</span></tt> and <tt class="docutils literal"><span class="pre">modoboa.extensions.sievefilters</span></tt> to the
+<tt class="docutils literal"><span class="pre">INSTALLED_APPS</span></tt> variable in <em>settings.py</em>.</p>
+</li>
+<li><p class="first">Go the <em>Settings/Extensions</em> panel, deactivate and activate your
+extensions, it will update all the symbolic links.</p>
+</li>
+</ol>
+</div>
+<div class="section" id="folders-manipulation-support-webmail-and-bugfixes">
+<h3>0.8.4: folders manipulation support (webmail) and bugfixes<a class="headerlink" href="#folders-manipulation-support-webmail-and-bugfixes" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic">
+<li><p class="first">Update the <tt class="docutils literal"><span class="pre">MIDDLEWARE_CLASSES</span></tt> variable in <em>settings.py</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">MIDDLEWARE_CLASSES</span> <span class="o">=</span> <span class="p">(</span>
+  <span class="s">&#39;django.middleware.common.CommonMiddleware&#39;</span><span class="p">,</span>
+  <span class="s">&#39;django.contrib.sessions.middleware.SessionMiddleware&#39;</span><span class="p">,</span>
+  <span class="s">&#39;django.contrib.auth.middleware.AuthenticationMiddleware&#39;</span><span class="p">,</span>
+  <span class="s">&#39;django.contrib.messages.middleware.MessageMiddleware&#39;</span><span class="p">,</span>
+  <span class="s">&#39;modoboa.lib.middleware.ExtControlMiddleware&#39;</span><span class="p">,</span>
+  <span class="s">&#39;modoboa.extensions.webmail.middleware.WebmailErrorMiddleware&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Go the <em>Settings/Extensions</em> panel, deactivate and activate your
+extensions, it will update all the symbolic links to the new format.</p>
+</li>
+<li><p class="first">Optional: update the <tt class="docutils literal"><span class="pre">DATABASES</span></tt> and <tt class="docutils literal"><span class="pre">TEMPLATE_LOADERS</span></tt>
+variables in <em>settings.py</em> to remove warning messages (appearing with
+Django 1.3):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">DATABASES</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="s">&quot;default&quot;</span> <span class="p">:</span> <span class="p">{</span>
+    <span class="s">&quot;ENGINE&quot;</span> <span class="p">:</span> <span class="s">&quot;&lt;your engine&gt;&quot;</span><span class="p">,</span>
+    <span class="s">&quot;NAME&quot;</span> <span class="p">:</span> <span class="s">&quot;modoboa&quot;</span><span class="p">,</span>
+    <span class="s">&quot;USER&quot;</span> <span class="p">:</span> <span class="s">&quot;&lt;your user&gt;&quot;</span><span class="p">,</span>
+    <span class="s">&quot;PASSWORD&quot;</span> <span class="p">:</span> <span class="s">&quot;&lt;your password&gt;&quot;</span><span class="p">,</span>
+    <span class="s">&quot;HOST&quot;</span> <span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+    <span class="s">&quot;PORT&quot;</span> <span class="p">:</span> <span class="s">&quot;&quot;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">TEMPLATE_LOADERS</span> <span class="o">=</span> <span class="p">(</span>
+  <span class="s">&#39;django.template.loaders.filesystem.Loader&#39;</span><span class="p">,</span>
+  <span class="s">&#39;django.template.loaders.app_directories.Loader&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="admin-application-refactoring-and-more">
+<h3>0.8.3: admin application refactoring and more<a class="headerlink" href="#admin-application-refactoring-and-more" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic">
+<li><p class="first">Migrate the <em>admin</em> application:</p>
+<div class="highlight-python"><pre>$ python manage.py migrate admin</pre>
+</div>
+</li>
+<li><p class="first">Update SQL queries used in your environnement (see
+<a class="reference internal" href="../integration/imap_and_smtp.html#postfix"><em>Postfix</em></a> or <a class="reference internal" href="../integration/imap_and_smtp.html#dovecot"><em>Dovecot</em></a>).</p>
+</li>
+<li><p class="first">Update <em>postfix</em> configuration so that it can handle domain aliases
+(see <a class="reference internal" href="../integration/imap_and_smtp.html#postfix"><em>Postfix</em></a>).</p>
+</li>
+</ol>
+</div>
+<div class="section" id="ckeditor-integration-and-more">
+<h3>0.8.2: ckeditor integration and more<a class="headerlink" href="#ckeditor-integration-and-more" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic">
+<li><p class="first">Migrate the admin applicaton:</p>
+<div class="highlight-python"><pre>$ python manage.py migrate admin</pre>
+</div>
+</li>
+<li><p class="first">Update your config file and add all extensions to <tt class="docutils literal"><span class="pre">INSTALLED_APPS</span></tt>
+(even those you are not going to use).</p>
+</li>
+<li><p class="first">Inside the <em>&lt;modoboa_dir&gt;/templates/</em> directory, remove all symbolic links.</p>
+</li>
+<li><p class="first">Download the latest release of ckeditor and extract it into <em>&lt;modoboa_dir&gt;/static/js/</em>. It should create a new directory named <em>ckeditor</em>.</p>
+</li>
+<li><p class="first">Update the following variables inside <em>settings.py</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">MEDIA_ROOT</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">MODOBOA_DIR</span><span class="p">,</span> <span class="s">&#39;static&#39;</span><span class="p">)</span>
+<span class="n">MEDIA_URL</span> <span class="o">=</span> <span class="s">&#39;/static/&#39;</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Then, add the following variable: <tt class="docutils literal"><span class="pre">MODOBOA_WEBPATH</span> <span class="pre">=</span> <span class="pre">'modoboa/'</span></tt></p>
+</li>
+<li><p class="first">Delete the following variables: <tt class="docutils literal"><span class="pre">STATIC_ROOTDIR</span></tt> and
+<tt class="docutils literal"><span class="pre">TEMPLATE_CONTEXT_PROCESSORS</span></tt>.</p>
+</li>
+<li><p class="first">Finally, add <tt class="docutils literal"><span class="pre">modoboa.lib.middleware.ExtControlMiddleware</span></tt> to
+<tt class="docutils literal"><span class="pre">MIDDLEWARE_CLASSES</span></tt>.</p>
+</li>
+</ol>
+</div>
+<div class="section" id="project-renamed">
+<h3>0.8.1 : project renamed<a class="headerlink" href="#project-renamed" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic">
+<li><p class="first">First, rename the <em>mailng</em> directory to <em>modoboa</em> and copy all the
+content from <em>modoboa-0.8.1</em> to <em>modoboa</em>.</p>
+</li>
+<li><p class="first">Edit <em>settings.py</em> and replace all occurences of mailng by
+modoboa. Make sure you don&#8217;t modify the <tt class="docutils literal"><span class="pre">DATABASE</span></tt> section as you&#8217;re
+not going to rename your database.</p>
+</li>
+<li><p class="first">Rename the <tt class="docutils literal"><span class="pre">MAILNG_DIR</span></tt> variable to <tt class="docutils literal"><span class="pre">MODOBOA_DIR</span></tt>.</p>
+</li>
+<li><p class="first">Add <tt class="docutils literal"><span class="pre">'django.contrib.messages.middleware.MessageMiddleware'</span></tt> to
+<tt class="docutils literal"><span class="pre">MIDDLEWARE_CLASSES</span></tt> and <tt class="docutils literal"><span class="pre">'django.contrib.messages'</span></tt> to
+<tt class="docutils literal"><span class="pre">INSTALLED_APPS</span></tt>. Save your modifications.</p>
+</li>
+<li><p class="first">Run the following command:</p>
+<div class="highlight-python"><pre>$ python manage.py syncdb</pre>
+</div>
+</li>
+<li><p class="first">For all activated extensions, run the following command:</p>
+<div class="highlight-python"><pre>$ export PYTHONPATH=&lt;modoboa_dir&gt;/..=
+$ DJANGO_SETTINGS_MODULE=modoboa.settings &lt;modoboa_dir&gt;/scripts/extension.py &lt;extension&gt; on</pre>
+</div>
+</li>
+<li><p class="first">Update your webserver configuration and restart it.</p>
+</li>
+</ol>
+</div>
+<div class="section" id="sql-migration-needed">
+<h3>0.8 : SQL migration needed<a class="headerlink" href="#sql-migration-needed" title="Permalink to this headline">¶</a></h3>
+<p>Before you start the migration, make sure you have updated your
+<tt class="docutils literal"><span class="pre">INSTALLED_APPS</span></tt> variable and that it contains at least:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">INSTALLED_APPS</span> <span class="o">=</span> <span class="p">(</span>
+   <span class="c"># Django&#39;s stuff before</span>
+
+   <span class="s">&#39;south&#39;</span><span class="p">,</span>
+   <span class="s">&#39;mailng&#39;</span><span class="p">,</span>
+   <span class="s">&#39;mailng.lib&#39;</span><span class="p">,</span>
+   <span class="s">&#39;mailng.admin&#39;</span><span class="p">,</span>
+   <span class="s">&#39;mailng.userprefs&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Starting with 0.8, mailng.main doesn&#8217;t exist anymore. You must remove
+it from your <tt class="docutils literal"><span class="pre">INSTALLED_APPS</span></tt>.</p>
+<p>Finally, run the following commands:</p>
+<div class="highlight-python"><pre>$ python manage.py syncdb
+$ python manage.py convert_to_south
+$ python manage.py migrate --all 0001 --fake
+$ python manage.py migrate --all 0002</pre>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Upgrading an existing installation</a><ul>
+<li><a class="reference internal" href="#latest-version">Latest version</a><ul>
+<li><a class="reference internal" href="#production-ready-at-last">1.0.0: production ready, at last</a><ul>
+<li><a class="reference internal" href="#configuration-file-update">Configuration file update</a></li>
+<li><a class="reference internal" href="#postfix-and-dovecot-configuration-update">Postfix and Dovecot configuration update</a></li>
+<li><a class="reference internal" href="#migration-issues">Migration issues</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#administrative-panel-performance-improved">0.9.4: administrative panel performance improved</a></li>
+<li><a class="reference internal" href="#standard-django-application-and-more">0.9.1: standard django application and more</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#modoboa-0-9-and-prior">Modoboa 0.9 and prior</a><ul>
+<li><a class="reference internal" href="#global-ui-refactoring-new-limits-extension-and-more">0.9: global UI refactoring, new <em>limits</em> extension and more</a></li>
+<li><a class="reference internal" href="#csv-import-feature-and-minor-fixes">0.8.8: CSV import feature and minor fixes</a></li>
+<li><a class="reference internal" href="#per-user-language-selection">0.8.7: per-user language selection</a></li>
+<li><a class="reference internal" href="#maintenance-release">0.8.6.1: maintenance release</a></li>
+<li><a class="reference internal" href="#quarantine-plugin-refactoring-using-django-s-orm">0.8.6: Quarantine plugin refactoring (using Django&#8217;s ORM)</a></li>
+<li><a class="reference internal" href="#new-sieve-filters-plugin-improved-admin-app">0.8.5: new &#8220;Sieve filters&#8221; plugin, improved admin app</a></li>
+<li><a class="reference internal" href="#folders-manipulation-support-webmail-and-bugfixes">0.8.4: folders manipulation support (webmail) and bugfixes</a></li>
+<li><a class="reference internal" href="#admin-application-refactoring-and-more">0.8.3: admin application refactoring and more</a></li>
+<li><a class="reference internal" href="#ckeditor-integration-and-more">0.8.2: ckeditor integration and more</a></li>
+<li><a class="reference internal" href="#project-renamed">0.8.1 : project renamed</a></li>
+<li><a class="reference internal" href="#sql-migration-needed">0.8 : SQL migration needed</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="install.html"
+                        title="previous chapter">Installation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="configuration.html"
+                        title="next chapter">Configuration</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/getting_started/upgrade.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="configuration.html" title="Configuration"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="install.html" title="Installation"
+             >previous</a> |</li>
+        <li><a href="../index.html">Modoboa 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Antoine Nguyen.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

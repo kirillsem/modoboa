@@ -1,0 +1,221 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Modoboa’s documentation! &mdash; Modoboa 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Modoboa 1.0.0 documentation" href="#" />
+    <link rel="next" title="Installation" href="getting_started/install.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="getting_started/install.html" title="Installation"
+             accesskey="N">next</a> |</li>
+        <li><a href="#">Modoboa 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="modoboa-s-documentation">
+<h1>Modoboa&#8217;s documentation!<a class="headerlink" href="#modoboa-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p>This documentation refers to version 1.0.0.</p>
+<div class="section" id="getting-started">
+<h2>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="getting_started/install.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/install.html#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/install.html#get-modoboa">Get Modoboa</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/install.html#database">Database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/install.html#deployment">Deployment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/install.html#first-use">First use</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started/upgrade.html">Upgrading an existing installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/upgrade.html#latest-version">Latest version</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/upgrade.html#modoboa-0-9-and-prior">Modoboa 0.9 and prior</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started/configuration.html">Configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/configuration.html#online-parameters">Online parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/configuration.html#customization">Customization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/configuration.html#host-configuration">Host configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/configuration.html#time-zone-and-language">Time zone and language</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/configuration.html#sessions-management">Sessions management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/configuration.html#external-authentication">External authentication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/configuration.html#database-maintenance">Database maintenance</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started/plugins.html">Using plugins</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/plugins.html#enable-or-disable-a-plugin">Enable or disable a plugin</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/plugins.html#per-admin-limits">Per-admin limits</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/plugins.html#amavisd-new-frontend">Amavisd-new frontend</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/plugins.html#graphical-statistics">Graphical statistics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/plugins.html#postifx-auto-reply-messages">Postifx auto-reply messages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/plugins.html#sieve-filters">Sieve filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/plugins.html#webmail">Webmail</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="integration-with-other-softwares">
+<h2>Integration with other softwares<a class="headerlink" href="#integration-with-other-softwares" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="integration/imap_and_smtp.html">Dovecot and Postfix</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="integration/imap_and_smtp.html#dovecot">Dovecot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="integration/imap_and_smtp.html#postfix">Postfix</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="integration/web_servers.html">Web servers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="integration/web_servers.html#apache2">Apache2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="integration/web_servers.html#nginx">Nginx</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="extending-modoboa">
+<h2>Extending Modoboa<a class="headerlink" href="#extending-modoboa" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="extending/plugin_api.html">Adding a new plugin</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="extending/plugin_api.html#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extending/plugin_api.html#the-required-glue">The required glue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extending/plugin_api.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extending/plugin_api.html#custom-administrative-roles">Custom administrative roles</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="extending/events.html">Available events</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="extending/events.html#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extending/events.html#supported-events">Supported events</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="additional-resource">
+<h2>Additional resource<a class="headerlink" href="#additional-resource" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="additional/migrating.html">Migrating from other software</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="additional/migrating.html#postfixadmin">PostfixAdmin</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="additional/virtualmachine.html">Using the virtual machine</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="additional/virtualmachine.html#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="additional/virtualmachine.html#connect-to-the-machine">Connect to the machine</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><em>Index</em></a></li>
+<li><a class="reference internal" href="py-modindex.html"><em>Module Index</em></a></li>
+<li><a class="reference internal" href="search.html"><em>Search Page</em></a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Modoboa&#8217;s documentation!</a><ul>
+<li><a class="reference internal" href="#getting-started">Getting started</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#integration-with-other-softwares">Integration with other softwares</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#extending-modoboa">Extending Modoboa</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#additional-resource">Additional resource</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+
+  <h4>Next topic</h4>
+  <p class="topless"><a href="getting_started/install.html"
+                        title="next chapter">Installation</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="getting_started/install.html" title="Installation"
+             >next</a> |</li>
+        <li><a href="#">Modoboa 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Antoine Nguyen.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

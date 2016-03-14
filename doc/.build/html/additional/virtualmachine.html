@@ -1,0 +1,203 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Using the virtual machine &mdash; Modoboa 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Modoboa 1.0.0 documentation" href="../index.html" />
+    <link rel="prev" title="Migrating from other software" href="migrating.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="migrating.html" title="Migrating from other software"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Modoboa 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="using-the-virtual-machine">
+<h1>Using the virtual machine<a class="headerlink" href="#using-the-virtual-machine" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>A virtual machine with a ready-to-use <em>Modoboa</em> setup is available
+<a class="reference external" href="http://modoboa.org/resources/modoboa.vmdk.bz2">here</a>. It is composed
+of the following components:</p>
+<ul class="simple">
+<li>Debian 6.0 (squeeze)</li>
+<li>Modoboa and its prerequisites</li>
+<li>MySQL</li>
+<li>Postfix</li>
+<li>Dovecot</li>
+<li>nginx and gunicorn</li>
+</ul>
+<p>Actually, it is the result you obtain if you follow the official
+documentation.</p>
+<p>The disk image is using the <a class="reference external" href="http://en.wikipedia.org/wiki/VMDK">VMDK</a> format and is compressed using
+bzip2. To decompress it, just run the following command:</p>
+<div class="highlight-python"><pre>$ bunzip2 modoboa.vmdk.bz2</pre>
+</div>
+<p>If you can&#8217;t use the vmdk format, you can use <a class="reference external" href="http://qemu.org/">qemu</a> to convert it to another one. For example:</p>
+<div class="highlight-python"><pre>$ qemu-img convert modoboa.vmdk -O qcow2 modoboa.qcow2</pre>
+</div>
+<p>Then, just use your prefered virtualization software (qemu, kvm,
+virtualbox, etc.) to start the machine. You&#8217;ll need to configure at
+least one bridged network interface if you want to be able to play
+with <em>Modoboa</em>, ie. your machine must be visible from your network.</p>
+<p>The default network interface of the machine (<tt class="docutils literal"><span class="pre">eth0</span></tt>) is configured
+to use the DHCP protocol.</p>
+</div>
+<div class="section" id="connect-to-the-machine">
+<h2>Connect to the machine<a class="headerlink" href="#connect-to-the-machine" title="Permalink to this headline">¶</a></h2>
+<p>The following UNIX users are available if you want to connect to the system:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="15%" />
+<col width="24%" />
+<col width="61%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Login</th>
+<th class="head">Password</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>root</td>
+<td>demo</td>
+<td>the root user</td>
+</tr>
+<tr class="row-odd"><td>demo</td>
+<td>demo</td>
+<td>an unpriviliged user</td>
+</tr>
+</tbody>
+</table>
+<p>To connect to <em>Modoboa</em>, first connect to the system and retrieve its
+current network address like this:</p>
+<div class="highlight-python"><pre>$ /sbin/ifconfig eth0</pre>
+</div>
+<p>Once you know its address, open a web browser and go to this url:</p>
+<div class="highlight-python"><pre>http://&lt;ip_address&gt;/admin/</pre>
+</div>
+<p>You should see the login page. Here are the users available by default:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="24%" />
+<col width="12%" />
+<col width="65%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Login</th>
+<th class="head">Password</th>
+<th class="head">Capabitilies</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>admin</td>
+<td>password</td>
+<td>Default super administrator. Can do anything
+on the admin but can&#8217;t access applications</td>
+</tr>
+<tr class="row-odd"><td><a class="reference external" href="mailto:admin&#37;&#52;&#48;demo&#46;local">admin<span>&#64;</span>demo<span>&#46;</span>local</a></td>
+<td>admin</td>
+<td>Administrator of the domain <em>demo.local</em>.
+Can administrater its domain and access to
+applications.</td>
+</tr>
+<tr class="row-even"><td><a class="reference external" href="mailto:user&#37;&#52;&#48;demo&#46;local">user<span>&#64;</span>demo<span>&#46;</span>local</a></td>
+<td>user</td>
+<td>Simple user. Can access to applications.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Using the virtual machine</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#connect-to-the-machine">Connect to the machine</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="migrating.html"
+                        title="previous chapter">Migrating from other software</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/additional/virtualmachine.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="migrating.html" title="Migrating from other software"
+             >previous</a> |</li>
+        <li><a href="../index.html">Modoboa 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

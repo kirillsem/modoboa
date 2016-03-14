@@ -1,0 +1,434 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Configuration &mdash; Modoboa 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Modoboa 1.0.0 documentation" href="../index.html" />
+    <link rel="next" title="Using plugins" href="plugins.html" />
+    <link rel="prev" title="Upgrading an existing installation" href="upgrade.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="plugins.html" title="Using plugins"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="upgrade.html" title="Upgrading an existing installation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Modoboa 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="configuration">
+<h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="online-parameters">
+<h2>Online parameters<a class="headerlink" href="#online-parameters" title="Permalink to this headline">¶</a></h2>
+<p>Modoboa provides online panels to modify internal parameters. There
+are two available levels:</p>
+<ul class="simple">
+<li>Application level: global parameters, define how the application
+behaves. Available at <em>Modoboa &gt; Parameters</em></li>
+<li>User level: per user customization. Available at <em>User &gt; Settings &gt;
+Preferences</em></li>
+</ul>
+<p>Regardless level, parameters are displayed using tabs, each tab
+corresponding to one application.</p>
+<div class="section" id="general-parameters">
+<span id="admin-params"></span><h3>General parameters<a class="headerlink" href="#general-parameters" title="Permalink to this headline">¶</a></h3>
+<p>The <em>admin</em> application exposes several parameters, they are presented below:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Description</th>
+<th class="head">Default value</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Authentication type</td>
+<td>The backend used for
+authentication</td>
+<td>Local</td>
+</tr>
+<tr class="row-odd"><td>Default password
+scheme</td>
+<td>Scheme used to crypt
+mailbox passwords</td>
+<td>crypt</td>
+</tr>
+<tr class="row-even"><td>Secret key</td>
+<td>A key used to
+encrypt users&#8217;
+password in sessions</td>
+<td>random value</td>
+</tr>
+<tr class="row-odd"><td>Handle mailboxes on
+filesystem</td>
+<td>Rename or remove
+mailboxes on the
+filesystem when they
+get renamed or
+removed within
+Modoboa</td>
+<td>no</td>
+</tr>
+<tr class="row-even"><td>Mailboxes owner</td>
+<td>The UNIX account who
+owns mailboxes on
+the filesystem</td>
+<td>vmail</td>
+</tr>
+<tr class="row-odd"><td>Automatic account
+removal</td>
+<td>When a mailbox is
+removed, also remove
+the associated
+account</td>
+<td>no</td>
+</tr>
+<tr class="row-even"><td>Maximum log record
+age</td>
+<td>The maximum age in
+days of a log record</td>
+<td>365</td>
+</tr>
+<tr class="row-odd"><td>Items per page</td>
+<td>Number of displayed
+items per page</td>
+<td>30</td>
+</tr>
+<tr class="row-even"><td>Default top
+redirection</td>
+<td>The default
+redirection used
+when no application
+is specified</td>
+<td>userprefs</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">A random secret key will be generated each time the <em>Parameters</em>
+page is refreshed and until you save parameters at least once.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Specific LDAP parameters are also available, see <a class="reference internal" href="#ldap-auth"><em>LDAP
+authentication</em></a>.</p>
+</div>
+</div>
+</div>
+<div class="section" id="customization">
+<h2>Customization<a class="headerlink" href="#customization" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="custom-logo">
+<h3>Custom logo<a class="headerlink" href="#custom-logo" title="Permalink to this headline">¶</a></h3>
+<p>You have the possibility to use a custom logo instead of the default
+one on the login page.</p>
+<p>To do so, open the <em>settings.py</em> file and add a
+<tt class="docutils literal"><span class="pre">MODOBOA_CUSTOM_LOGO</span></tt> variable. This variable must contain the
+relative URL of your logo under <tt class="docutils literal"><span class="pre">MEDIA_URL</span></tt>. For example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">MODOBOA_CUSTOM_LOGO</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">MEDIA_URL</span><span class="p">,</span> <span class="s">&quot;custom_logo.png&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then copy your logo file into the directory indicated by
+<tt class="docutils literal"><span class="pre">MEDIA_ROOT</span></tt>.</p>
+</div>
+</div>
+<div class="section" id="host-configuration">
+<h2>Host configuration<a class="headerlink" href="#host-configuration" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This section is only relevant when Modoboa handles mailboxes
+renaming and removal from the filesystem.</p>
+</div>
+<p>To manipulate mailboxes on the filesystem, you must allow the user who
+runs Modoboa to execute commands as the user who owns mailboxes.</p>
+<p>To do so, edit the <em>/etc/sudoers</em> file and add the following inside:</p>
+<div class="highlight-python"><pre>&lt;user_that_runs_modoboa&gt; ALL=(&lt;mailboxes owner&gt;) NOPASSWD: ALL</pre>
+</div>
+<p>Replace values between <tt class="docutils literal"><span class="pre">&lt;&gt;</span></tt> by the ones you use.</p>
+</div>
+<div class="section" id="time-zone-and-language">
+<span id="timezone-lang"></span><h2>Time zone and language<a class="headerlink" href="#time-zone-and-language" title="Permalink to this headline">¶</a></h2>
+<p>Modoboa is available in many languages.</p>
+<p>To specify the default language to use, edit the <em>settings.py</em> file
+and modify the <tt class="docutils literal"><span class="pre">LANGUAGE_CODE</span></tt> variable:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">LANGUAGE_CODE</span> <span class="o">=</span> <span class="s">&#39;fr&#39;</span> <span class="c"># or &#39;en&#39; for english, etc.</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Each user has the possibility to define the language he prefers.</p>
+</div>
+<p>In the same configuration file, specify the timezone to use by
+modifying the <tt class="docutils literal"><span class="pre">TIME_ZONE</span></tt> variable. For example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">TIME_ZONE</span> <span class="o">=</span> <span class="s">&#39;Europe/Paris&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="sessions-management">
+<h2>Sessions management<a class="headerlink" href="#sessions-management" title="Permalink to this headline">¶</a></h2>
+<p>Modoboa uses <a class="reference external" href="https://docs.djangoproject.com/en/dev/topics/http/sessions/?from=olddocs">Django&#8217;s session framework</a>
+to store per-user information.</p>
+<p>Few parameters need to be set in the <em>settings.py</em> configuration
+file to make Modoboa behave as expected:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SESSION_EXPIRE_AT_BROWSER_CLOSE</span> <span class="o">=</span> <span class="bp">False</span> <span class="c"># Default value</span>
+<span class="n">SESSION_COOKIE_AGE</span> <span class="o">=</span> <span class="mi">600</span> <span class="c"># time in seconds</span>
+</pre></div>
+</div>
+<p>The first parameter is optional but you must ensure it is set to
+<tt class="docutils literal"><span class="pre">False</span></tt> (the default value).</p>
+<p>The second one tells Django that a session inactive for this time
+should be considered as closed. You are free to adjust it according to
+your need.</p>
+<p>The default configuration file provided by the <em>modoboa-admin.py</em>
+command is properly configured.</p>
+</div>
+<div class="section" id="external-authentication">
+<h2>External authentication<a class="headerlink" href="#external-authentication" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="ldap">
+<span id="ldap-auth"></span><h3>LDAP<a class="headerlink" href="#ldap" title="Permalink to this headline">¶</a></h3>
+<p><em>Modoboa</em> supports external LDAP authentication using the following extra components:</p>
+<ul class="simple">
+<li><a class="reference external" href="http://www.python-ldap.org/">Python LDAP client</a></li>
+<li><a class="reference external" href="http://pypi.python.org/pypi/django-auth-ldap">Django LDAP authentication backend</a></li>
+</ul>
+<p>If you want to use this feature, you must first install those components:</p>
+<div class="highlight-python"><pre>$ pip install python-ldap django-auth-ldap</pre>
+</div>
+<p>Then, all you have to do is to modify the <em>settings.py</em> file. Add a
+new authentication backend to the <cite>AUTHENTICATION_BACKENDS</cite> variable,
+like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">AUTHENTICATION_BACKENDS</span> <span class="o">=</span> <span class="p">(</span>
+  <span class="s">&#39;modoboa.lib.authbackends.LDAPBackend&#39;</span><span class="p">,</span>
+  <span class="s">&#39;modoboa.lib.authbackends.SimpleBackend&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Then, go to <em>Modoboa &gt; Parameters &gt; General</em> and set <em>Authentication
+type</em> to LDAP.</p>
+<p>From there, new parameters will appear to let you configure the way
+Modoboa should connect to your LDAP server. They are described just below:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Description</th>
+<th class="head">Default value</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Server address</td>
+<td>The IP address of
+the DNS name of the
+LDAP server</td>
+<td>localhost</td>
+</tr>
+<tr class="row-odd"><td>Server port</td>
+<td>The TCP port number
+used by the LDAP
+server</td>
+<td>389</td>
+</tr>
+<tr class="row-even"><td>Use a secure
+connection</td>
+<td>Use an SSL/TLS
+connection to access
+the LDAP server</td>
+<td>no</td>
+</tr>
+<tr class="row-odd"><td>Authentication
+method</td>
+<td>Choose the
+authentication
+method to use</td>
+<td>Direct bind</td>
+</tr>
+<tr class="row-even"><td>User DN template</td>
+<td>The template used to
+construct a user&#8217;s
+DN. It should
+contain one
+placeholder
+(ie. <tt class="docutils literal"><span class="pre">%(user)s</span></tt>)</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>Password attribute</td>
+<td>The attribute used
+to store user
+passwords</td>
+<td>userPassword</td>
+</tr>
+<tr class="row-even"><td>Active Directory</td>
+<td>Tell if the LDAP
+server is an Active
+Directory one</td>
+<td>no</td>
+</tr>
+</tbody>
+</table>
+<p>If you need additional parameters, you will find a detailled
+documentation <a class="reference external" href="http://packages.python.org/django-auth-ldap/">here</a>.</p>
+<p>Once the authentication is properly configured, the users defined in
+your LDAP directory will be able to connect to <em>Modoboa</em>, the associated
+domain and mailboxes will be automatically created if needed.</p>
+<p>Users will also be able to update their LDAP password directly from
+Modoboa.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Modoboa doesn&#8217;t provide any synchronization mechanism once a user
+is registered into the database. Any modification done from the
+directory to a user account will not be reported to Modoboa (an
+email address change for example). Currently, the only solution is
+to manually delete the Modoboa record, it will be recreated on the
+next user login.</p>
+</div>
+</div>
+</div>
+<div class="section" id="database-maintenance">
+<h2>Database maintenance<a class="headerlink" href="#database-maintenance" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="cleaning-the-logs-table">
+<h3>Cleaning the logs table<a class="headerlink" href="#cleaning-the-logs-table" title="Permalink to this headline">¶</a></h3>
+<p>Modoboa logs administrator specific actions into the database. A
+clean-up script is provided to automatically remove oldest
+records. The maximum log record age can be configured through the
+online panel.</p>
+<p>To use it, you can setup a cron job to run every night:</p>
+<div class="highlight-python"><pre>0 0 * * * &lt;modoboa_site&gt;/manage.py cleanlogs</pre>
+</div>
+</div>
+<div class="section" id="cleaning-the-session-table">
+<h3>Cleaning the session table<a class="headerlink" href="#cleaning-the-session-table" title="Permalink to this headline">¶</a></h3>
+<p>Django does not provide automatic purging. Therefore, it&#8217;s your job to
+purge expired sessions on a regular basis.</p>
+<p>Django provides a sample clean-up script: <tt class="docutils literal"><span class="pre">django-admin.py</span>
+<span class="pre">cleanup</span></tt>. That script deletes any session in the session table whose
+<tt class="docutils literal"><span class="pre">expire_date</span></tt> is in the past.</p>
+<p>For example, you could setup a cron job to run this script every night:</p>
+<div class="highlight-python"><pre>0 0 * * * &lt;modoboa_site&gt;/manage.py cleanup</pre>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Configuration</a><ul>
+<li><a class="reference internal" href="#online-parameters">Online parameters</a><ul>
+<li><a class="reference internal" href="#general-parameters">General parameters</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#customization">Customization</a><ul>
+<li><a class="reference internal" href="#custom-logo">Custom logo</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#host-configuration">Host configuration</a></li>
+<li><a class="reference internal" href="#time-zone-and-language">Time zone and language</a></li>
+<li><a class="reference internal" href="#sessions-management">Sessions management</a></li>
+<li><a class="reference internal" href="#external-authentication">External authentication</a><ul>
+<li><a class="reference internal" href="#ldap">LDAP</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#database-maintenance">Database maintenance</a><ul>
+<li><a class="reference internal" href="#cleaning-the-logs-table">Cleaning the logs table</a></li>
+<li><a class="reference internal" href="#cleaning-the-session-table">Cleaning the session table</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="upgrade.html"
+                        title="previous chapter">Upgrading an existing installation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="plugins.html"
+                        title="next chapter">Using plugins</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/getting_started/configuration.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="plugins.html" title="Using plugins"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="upgrade.html" title="Upgrading an existing installation"
+             >previous</a> |</li>
+        <li><a href="../index.html">Modoboa 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Antoine Nguyen.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

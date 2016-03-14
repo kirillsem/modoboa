@@ -1,0 +1,76 @@
+{% extends "twocols.html" %}{% load i18n sfilters_tags %}{% load url from future %}
+{% block pagetitle %}{% trans "Message filters" %}{% endblock %}
+{% block html_head %}
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}sievefilters/css/style.css" />
+<script type="text/javascript" src="{{ STATIC_URL }}js/history.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}sievefilters/js/lib.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/dynamic_input.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}sievefilters/js/jquery.dynfields.js"></script>
+<script type="text/javascript">
+var history = new History({
+    deflocation: "{{ default_script }}",
+    defcallback: loadfs
+});
+var cond_templates = null;
+var action_templates = null;
+
+function filterform_cb() {
+    cond_templates = fetch_templates("{% url 'modoboa.extensions.sievefilters.views.get_templates' 'condition' %}", cond_templates);
+    action_templates = fetch_templates("{% url 'modoboa.extensions.sievefilters.views.get_templates' 'action' %}", action_templates);
+
+    var $dc = $("#condition_0").dyncondition({
+        templates: cond_templates
+    }).data('dyncondition');
+    var $da = $("#action_0").dynaction({
+        templates: action_templates
+    }).data('dynaction');
+
+    $("input[name=match_type]").click(function(e) {
+        if ($(this).val() == "all") {
+            $("div[id*=condition]").hide();
+        } else {
+            $("div[id*=condition]").show();
+        }
+    });
+
+    $(".submit").one('click', function(e) {
+        var counters = "conds=" + $dc.fields_cnt + "&actions=" + $da.fields_cnt;
+
+        simple_ajax_form_post(e, {
+            error_cb: filterform_cb,
+            reload_mode: 'history',
+            extradata: counters
+        });
+    });
+}
+
+$(document).ready(function() {
+  $("#curfset").change(changefs);
+});
+</script>
+{% endblock %}
+{% block leftcol %}
+<div class="well sidebar-nav">
+  <ul id="menu" class="nav nav-list">
+    <li class="nav-header">{% trans "Filter sets" %}</li>
+    <li>
+      <select id="curfset" class="span12">
+        {% if active_script %}
+        <option value="{{ active_script }}">{{ active_script }} ({% trans "active" %})</option>
+        {% endif %}
+        {% for script in scripts %}
+        <option value="{{ script }}">{{ script }}</option>
+        {% endfor %}
+      </select>
+    </li>
+    {% sfilters_menu user %}
+  </ul>
+</div>
+{% endblock %}
+{% block apparea %}
+<div id="set_content">
+  {% if not active_script and not scripts %}
+  <div class="alert alert-info">{% trans "No filters set defined yet. You must create one in order to define filters." %}</div>
+  {% endif %}
+</div>
+{% endblock %}

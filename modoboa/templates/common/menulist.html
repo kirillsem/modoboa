@@ -1,0 +1,25 @@
+{% load i18n libextras %}
+{% for entry in entries %}
+  {% if entry.separator %}
+  <li class="divider">&nbsp;</li>
+  {% else %}
+    {% if entry.menu %}
+  <li class="dropdown {{ entry.class }}{% if selection == entry.name %} active{% endif %}"> 
+    <a class="dropdown-toggle" name="{{ entry.name }}" data-toggle="dropdown" href="{{ entry.url }}">
+      {% if entry.img %}<i class="{{ entry.img }}"></i>{% endif %}
+      {{ entry.label }}
+    </a>
+    <ul class="dropdown-menu"
+        {% if entry.width %}style="width: {{ entry.width }}px"{% endif %}>
+      {% for sentry in entry.menu %}
+      <li>{% render_link sentry %}</li>
+      {% endfor %}
+    </ul>
+  </li>
+    {% else %}
+  <li class="{% if selection == entry.name %}active{% endif %}">
+    {% render_link entry %}
+  </li>
+    {% endif %}
+  {% endif %}
+{% endfor %}

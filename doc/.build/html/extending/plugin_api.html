@@ -1,0 +1,242 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Adding a new plugin &mdash; Modoboa 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Modoboa 1.0.0 documentation" href="../index.html" />
+    <link rel="next" title="Available events" href="events.html" />
+    <link rel="prev" title="Web servers" href="../integration/web_servers.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="events.html" title="Available events"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../integration/web_servers.html" title="Web servers"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Modoboa 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="adding-a-new-plugin">
+<h1>Adding a new plugin<a class="headerlink" href="#adding-a-new-plugin" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>Modoboa offers a plugin API to expand its capabilities. The current
+implementation provides the following possibilities:</p>
+<ul class="simple">
+<li>Expand navigation by adding entry points to your plugin inside the GUI</li>
+<li>Access and modify administrative objects (domains, mailboxes, etc.)</li>
+<li>Register callback actions for specific events</li>
+</ul>
+<p>Plugins are nothing more than Django applications with an extra piece
+of code that integrates them into Modoboa. Usually, the <em>__init__.py</em> file
+will contain a complete description of the plugin:</p>
+<ul class="simple">
+<li>Admin and user parameters</li>
+<li>Observed events</li>
+<li>Custom menu entries</li>
+</ul>
+<p>The communication between both applications is provided by
+<a class="reference internal" href="events.html#events"><em>Available events</em></a>. Modoboa offers some kind of hooks to let plugin add custom
+actions.</p>
+<p>The following subsections describe plugin architecture and explain
+how you can create your own plugin.</p>
+</div>
+<div class="section" id="the-required-glue">
+<h2>The required glue<a class="headerlink" href="#the-required-glue" title="Permalink to this headline">¶</a></h2>
+<p>To create a new plugin, just start a new django application like
+this (into modoboa&#8217;s directory):</p>
+<div class="highlight-python"><pre>$ python manage.py startapp</pre>
+</div>
+<p>Then, you need to register this application using the provided
+API. Just copy/paste the following example into the <em>__init__.py</em> file
+of the future extension:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">modoboa.extensions</span> <span class="kn">import</span> <span class="n">ModoExtension</span><span class="p">,</span> <span class="n">exts_pool</span>
+
+<span class="k">class</span> <span class="nc">MyExtension</span><span class="p">(</span><span class="n">ModoExtension</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;myext&quot;</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="s">&quot;My Extension&quot;</span>
+    <span class="n">version</span> <span class="o">=</span> <span class="s">&quot;0.1&quot;</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="s">&quot;A description&quot;</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="s">&quot;myext_root_location&quot;</span> <span class="c"># optional, name is used if not defined</span>
+
+    <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This method is called when the extension is activated.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This method is called when Modoboa loads available and activated plugins.</span>
+
+<span class="sd">        Declare parameters and register events here.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">destroy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This function is called when a plugin is disabled from the interface.</span>
+
+<span class="sd">        Unregister parameters and events here.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+<span class="n">exts_pool</span><span class="o">.</span><span class="n">register_extension</span><span class="p">(</span><span class="n">MyExtension</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Once done, simply add your plugin&#8217;s module name to the
+<tt class="docutils literal"><span class="pre">INSTALLED_APPS</span></tt> variable located inside <em>settings.py</em>. Optionaly,
+run <tt class="docutils literal"><span class="pre">python</span> <span class="pre">manage.py</span> <span class="pre">syncdb</span></tt> if your plugin provides custom tables
+and <tt class="docutils literal"><span class="pre">python</span> <span class="pre">manage.py</span> <span class="pre">collectstatic</span></tt> to update static files.</p>
+</div>
+<div class="section" id="parameters">
+<h2>Parameters<a class="headerlink" href="#parameters" title="Permalink to this headline">¶</a></h2>
+<p>A plugin can declare its own parameters. There are two levels available:</p>
+<ul class="simple">
+<li>&#8216;Administration&#8217; parameters : used to configure the plugin, editable
+inside the <em>Admin &gt; Settings &gt; Parameters</em> page,</li>
+<li>&#8216;User&#8217; parameters : per-user parameters (or preferences), editable
+inside the <em>Options &gt; Preferences</em> page.</li>
+</ul>
+<div class="section" id="playing-with-parameters">
+<h3>Playing with parameters<a class="headerlink" href="#playing-with-parameters" title="Permalink to this headline">¶</a></h3>
+<p>To declare a new administration parameter, use the following function:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">modoboa.lib</span> <span class="kn">import</span> <span class="n">parameters</span>
+
+<span class="n">parameters</span><span class="o">.</span><span class="n">register_admin</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To declare a new user parameter, use the following function:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">parameter</span><span class="o">.</span><span class="n">register_user</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Both functions accept extra arguments listed here:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">type</span></tt> : parameter&#8217;s type, possible values are : <tt class="docutils literal"><span class="pre">int</span></tt>, <tt class="docutils literal"><span class="pre">string</span></tt>, <tt class="docutils literal"><span class="pre">list</span></tt>, <tt class="docutils literal"><span class="pre">list_yesno</span></tt>,</li>
+<li><tt class="docutils literal"><span class="pre">deflt</span></tt> : default value,</li>
+<li><tt class="docutils literal"><span class="pre">help</span></tt> : help text,</li>
+<li><tt class="docutils literal"><span class="pre">values</span></tt> : list of possible values if <tt class="docutils literal"><span class="pre">type</span></tt> is <tt class="docutils literal"><span class="pre">list</span></tt>.</li>
+</ul>
+<p>To undeclare parameters (for example when a plugin is disabled is
+disabled from the interface), use the following function:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">parameters</span><span class="o">.</span><span class="n">unregister_app</span><span class="p">(</span><span class="n">appname</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">appname</span></tt> corresponds to your plugin&#8217;s name, ie. the name of the
+directory containing the source code.</p>
+</div>
+</div>
+<div class="section" id="custom-administrative-roles">
+<h2>Custom administrative roles<a class="headerlink" href="#custom-administrative-roles" title="Permalink to this headline">¶</a></h2>
+<p>Modoboa uses Django&#8217;s internal permission system. Administrative roles
+are nothing more than groups (<tt class="docutils literal"><span class="pre">Group</span></tt> instances).</p>
+<p>If an extension needs to add new roles, it needs to follow those steps:</p>
+<ol class="arabic simple">
+<li>Create a new <tt class="docutils literal"><span class="pre">Group</span></tt> instance. It can be done by providing
+<a class="reference external" href="https://docs.djangoproject.com/en/dev/howto/initial-data/">fixtures</a>
+or by creating it into the extension <tt class="docutils literal"><span class="pre">init</span></tt> function</li>
+<li>A a new listener for the <a class="reference internal" href="events.html#getextraroles"><em>GetExtraRoles</em></a> event that will return
+the group&#8217;s name</li>
+</ol>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Adding a new plugin</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#the-required-glue">The required glue</a></li>
+<li><a class="reference internal" href="#parameters">Parameters</a><ul>
+<li><a class="reference internal" href="#playing-with-parameters">Playing with parameters</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#custom-administrative-roles">Custom administrative roles</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../integration/web_servers.html"
+                        title="previous chapter">Web servers</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="events.html"
+                        title="next chapter">Available events</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/extending/plugin_api.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="events.html" title="Available events"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../integration/web_servers.html" title="Web servers"
+             >previous</a> |</li>
+        <li><a href="../index.html">Modoboa 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

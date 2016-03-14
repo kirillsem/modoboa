@@ -1,0 +1,622 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Available events &mdash; Modoboa 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Modoboa 1.0.0 documentation" href="../index.html" />
+    <link rel="next" title="Migrating from other software" href="../additional/migrating.html" />
+    <link rel="prev" title="Adding a new plugin" href="plugin_api.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../additional/migrating.html" title="Migrating from other software"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="plugin_api.html" title="Adding a new plugin"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Modoboa 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="available-events">
+<span id="events"></span><h1>Available events<a class="headerlink" href="#available-events" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>Modoboa provides a simple API to interact with events. It understands
+two kinds of events:</p>
+<ul class="simple">
+<li>Those that return a value</li>
+<li>Those that return nothing</li>
+</ul>
+<p>Listening to a specific event is achieved as follow:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">modoboa.lib</span> <span class="kn">import</span> <span class="n">events</span>
+
+<span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+  <span class="k">pass</span>
+
+<span class="n">events</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s">&#39;event&#39;</span><span class="p">,</span> <span class="n">callback</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can also use the custom decorator <tt class="docutils literal"><span class="pre">events.observe</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@events.observe</span><span class="p">(</span><span class="s">&#39;event&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+  <span class="k">pass</span>
+</pre></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">event</span></tt> is the event&#8217;s name you want to listen to, <tt class="docutils literal"><span class="pre">callback</span></tt> is
+the function that will be called each time this event is raised. Each
+event impose to callbacks a specific prototype to respect. See below
+for a detailled list.</p>
+<p>To stop listening to as specific event, you must use the
+<tt class="docutils literal"><span class="pre">unregister</span></tt> function:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">events</span><span class="o">.</span><span class="n">unregister</span><span class="p">(</span><span class="s">&#39;event&#39;</span><span class="p">,</span> <span class="n">callback</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The parameters are the same than those used with <tt class="docutils literal"><span class="pre">register</span></tt>.</p>
+<p>Read further to get a complete list and description of all available events.</p>
+</div>
+<div class="section" id="supported-events">
+<h2>Supported events<a class="headerlink" href="#supported-events" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="accountcreated">
+<h3>AccountCreated<a class="headerlink" href="#accountcreated" title="Permalink to this headline">¶</a></h3>
+<p>Raised when a new account is created.</p>
+<p><em>Callback prototype</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">account</span><span class="p">):</span> <span class="k">pass</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">account</span></tt> is the newly created account (<tt class="docutils literal"><span class="pre">User</span></tt> instance)</li>
+</ul>
+</div>
+<div class="section" id="accountdeleted">
+<h3>AccountDeleted<a class="headerlink" href="#accountdeleted" title="Permalink to this headline">¶</a></h3>
+<p>Raised when an existing account is deleted.</p>
+<p><em>Callback prototype</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">account</span><span class="p">):</span> <span class="k">pass</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">oldaccount</span></tt> is the account that is going to be deleted</li>
+</ul>
+</div>
+<div class="section" id="accountmodified">
+<h3>AccountModified<a class="headerlink" href="#accountmodified" title="Permalink to this headline">¶</a></h3>
+<p>Raised when an existing account is modified.</p>
+<p><em>Callback prototype</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">oldaccount</span><span class="p">,</span> <span class="n">newaccount</span><span class="p">):</span> <span class="k">pass</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">oldaccount</span></tt> is the account before it is modified</li>
+<li><tt class="docutils literal"><span class="pre">newaccount</span></tt> is the account after the modification</li>
+</ul>
+</div>
+<div class="section" id="extraaccountactions">
+<h3>ExtraAccountActions<a class="headerlink" href="#extraaccountactions" title="Permalink to this headline">¶</a></h3>
+<p>Raised when the account list is displayed. Let developers define new
+actions to act on a specific user.</p>
+<p><em>Callback prototype</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">account</span><span class="p">):</span> <span class="k">pass</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">account</span></tt> is the account being listed</li>
+</ul>
+</div>
+<div class="section" id="adminmenudisplay">
+<h3>AdminMenuDisplay<a class="headerlink" href="#adminmenudisplay" title="Permalink to this headline">¶</a></h3>
+<p>Raised when an admin menu is about to be displayed.</p>
+<p><em>Callback prototype</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span> <span class="k">pass</span>
+</pre></div>
+</div>
+<p>The <tt class="docutils literal"><span class="pre">target</span></tt> argument indicates which menu is being
+displayed. Possible values are:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">admin_menu_box</span></tt> : corresponds to the menu bar available inside administration pages</li>
+<li><tt class="docutils literal"><span class="pre">top_menu</span></tt> : corresponds to the top black bar</li>
+</ul>
+<p>See <a class="reference internal" href="#usermenudisplay"><em>UserMenuDisplay</em></a> for a description of what callbacks that
+listen to this event must return.</p>
+</div>
+<div class="section" id="cancreate">
+<h3>CanCreate<a class="headerlink" href="#cancreate" title="Permalink to this headline">¶</a></h3>
+<p>Raised just before a user tries to create a new object.</p>
+<p><em>Callback prototype</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">user</span><span class="p">):</span> <span class="k">pass</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">user</span></tt> is a <tt class="docutils literal"><span class="pre">User</span></tt> instance</li>
+</ul>
+<p>Return <tt class="docutils literal"><span class="pre">True</span></tt> or <tt class="docutils literal"><span class="pre">False</span></tt> to indicate if this user can respectively
+create or not create a new <tt class="docutils literal"><span class="pre">Domain</span></tt> object.</p>
+</div>
+<div class="section" id="checkextraaccountform">
+<h3>CheckExtraAccountForm<a class="headerlink" href="#checkextraaccountform" title="Permalink to this headline">¶</a></h3>
+<p>When an account is being modified, this event lets extensions check if
+this account is concerned by a specific form.</p>
+<p><em>Callback prototype</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">account</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span> <span class="k">pass</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">account</span></tt> is the <tt class="docutils literal"><span class="pre">User</span></tt> instance beeing modified</li>
+<li><tt class="docutils literal"><span class="pre">form</span></tt> is a dictionnary (same content as for <tt class="docutils literal"><span class="pre">ExtraAccountForm</span></tt>)</li>
+</ul>
+<p>Callbacks listening to this event must return a list containing one
+Boolean.</p>
+</div>
+<div class="section" id="createdomain">
+<h3>CreateDomain<a class="headerlink" href="#createdomain" title="Permalink to this headline">¶</a></h3>
+<p>Raised when a new domain is created.</p>
+<p><em>Callback prototype</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">domain</span><span class="p">):</span> <span class="k">pass</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">user</span></tt> corresponds to the <tt class="docutils literal"><span class="pre">User</span></tt> object creating the domain (its owner)</li>
+<li><tt class="docutils literal"><span class="pre">domain</span></tt> is a <tt class="docutils literal"><span class="pre">Domain</span></tt> instance</li>
+</ul>
+</div>
+<div class="section" id="createmailbox">
+<h3>CreateMailbox<a class="headerlink" href="#createmailbox" title="Permalink to this headline">¶</a></h3>
+<p>Raised when a new mailbox is created.</p>
+<p><em>Callback prototype</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">mailbox</span><span class="p">):</span> <span class="k">pass</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">user</span></tt> is the new mailbox&#8217;s owner (<tt class="docutils literal"><span class="pre">User</span></tt> instance)</li>
+<li><tt class="docutils literal"><span class="pre">mailbox</span></tt> is the new mailbox (<tt class="docutils literal"><span class="pre">Mailbox</span></tt> instance)</li>
+</ul>
+</div>
+<div class="section" id="deletedomain">
+<h3>DeleteDomain<a class="headerlink" href="#deletedomain" title="Permalink to this headline">¶</a></h3>
+<p>Raised when an existing domain is about to be deleted.</p>
+<p><em>Callback prototype</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">domain</span><span class="p">):</span> <span class="k">pass</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">domain</span></tt> is a <tt class="docutils literal"><span class="pre">Domain</span></tt> instance</li>
+</ul>
+</div>
+<div class="section" id="deletemailbox">
+<h3>DeleteMailbox<a class="headerlink" href="#deletemailbox" title="Permalink to this headline">¶</a></h3>
+<p>Raised when an existing mailbox is about to be deleted.</p>
+<p><em>Callback prototype</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">mailbox</span><span class="p">):</span> <span class="k">pass</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">mailbox</span></tt> is a <tt class="docutils literal"><span class="pre">Mailbox</span></tt> instance</li>
+</ul>
+</div>
+<div class="section" id="domainaliascreated">
+<h3>DomainAliasCreated<a class="headerlink" href="#domainaliascreated" title="Permalink to this headline">¶</a></h3>
+<p>Raised when a new domain alias is created.</p>
+<p><em>Callback prototype</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">domain_alias</span><span class="p">):</span> <span class="k">pass</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">user</span></tt> is the new domain alias owner (<tt class="docutils literal"><span class="pre">User</span></tt> instance)</li>
+<li><tt class="docutils literal"><span class="pre">domain_alias</span></tt> is the new domain alias (<tt class="docutils literal"><span class="pre">DomainAlias</span></tt> instance)</li>
+</ul>
+</div>
+<div class="section" id="domainaliasdeleted">
+<h3>DomainAliasDeleted<a class="headerlink" href="#domainaliasdeleted" title="Permalink to this headline">¶</a></h3>
+<p>Raised when an existing domain alias is about to be deleted.</p>
+<p><em>Callback prototype</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">domain_alias</span><span class="p">):</span> <span class="k">pass</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">domain_alias</span></tt> is a <tt class="docutils literal"><span class="pre">DomainAlias</span></tt> instance</li>
+</ul>
+</div>
+<div class="section" id="domainmodified">
+<h3>DomainModified<a class="headerlink" href="#domainmodified" title="Permalink to this headline">¶</a></h3>
+<p>Raised when a domain has been modified.</p>
+<p><em>Callback prototype</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">domain</span><span class="p">):</span> <span class="k">pass</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">domain</span></tt> is the modified <tt class="docutils literal"><span class="pre">Domain</span></tt> instance, it contains an extra
+<tt class="docutils literal"><span class="pre">oldname</span></tt> field which contains the old domain name</li>
+</ul>
+</div>
+<div class="section" id="extdisabled">
+<h3>ExtDisabled<a class="headerlink" href="#extdisabled" title="Permalink to this headline">¶</a></h3>
+<p>Raised just after an extension has been disabled.</p>
+<p><em>Callback prototype</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">extension</span><span class="p">):</span> <span class="k">pass</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">extension</span></tt> is an <tt class="docutils literal"><span class="pre">Extension</span></tt> instance</li>
+</ul>
+</div>
+<div class="section" id="extenabled">
+<h3>ExtEnabled<a class="headerlink" href="#extenabled" title="Permalink to this headline">¶</a></h3>
+<p>Raised just after an extension has been activated.</p>
+<p><em>Callback prototype</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">extension</span><span class="p">):</span> <span class="k">pass</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">extension</span></tt> is an <tt class="docutils literal"><span class="pre">Extension</span></tt> instance</li>
+</ul>
+</div>
+<div class="section" id="extraaccountform">
+<h3>ExtraAccountForm<a class="headerlink" href="#extraaccountform" title="Permalink to this headline">¶</a></h3>
+<p>Let extensions add new forms to the account edition form (the one with
+tabs).</p>
+<p><em>Callback prototype</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">account</span><span class="p">):</span> <span class="k">pass</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">user</span></tt> is a <tt class="docutils literal"><span class="pre">User</span></tt> instance corresponding to the currently
+logged in user</li>
+<li><tt class="docutils literal"><span class="pre">account</span></tt> is the account beeing modified (<tt class="docutils literal"><span class="pre">User</span></tt> instance)</li>
+</ul>
+<p>Callbacks listening to the event must return a list of dictionnaries,
+each one must contain at least three keys:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span><span class="s">&quot;id&quot;</span> <span class="p">:</span> <span class="s">&quot;&lt;the form&#39;s id&gt;&quot;</span><span class="p">,</span>
+ <span class="s">&quot;title&quot;</span> <span class="p">:</span> <span class="s">&quot;&lt;the title used to present the form&gt;&quot;</span><span class="p">,</span>
+ <span class="s">&quot;cls&quot;</span> <span class="p">:</span> <span class="n">TheFormClassName</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="extraadmincontent">
+<h3>ExtraAdminContent<a class="headerlink" href="#extraadmincontent" title="Permalink to this headline">¶</a></h3>
+<p>Let extensions add extra content into the admin panel.</p>
+<p><em>Callback prototype</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">currentpage</span><span class="p">):</span> <span class="k">pass</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">user</span></tt> is a <tt class="docutils literal"><span class="pre">User</span></tt> instance corresponding to the currently
+logged in user</li>
+<li><tt class="docutils literal"><span class="pre">target</span></tt> is a string indicating the place where the content will
+be displayed. Possible values are : <tt class="docutils literal"><span class="pre">leftcol</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">currentpage</span></tt> is a string indicating which page (or section) is
+displayed. Possible values are : <tt class="docutils literal"><span class="pre">domains</span></tt>, <tt class="docutils literal"><span class="pre">identities</span></tt></li>
+</ul>
+<p>Callbacks listening to this event must return a list of string.</p>
+</div>
+<div class="section" id="extradomainform">
+<h3>ExtraDomainForm<a class="headerlink" href="#extradomainform" title="Permalink to this headline">¶</a></h3>
+<p>Let extensions add new forms to the domain edition form (the one with
+tabs).</p>
+<p><em>Callback prototype</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">domain</span><span class="p">):</span> <span class="k">pass</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">user</span></tt> is a <tt class="docutils literal"><span class="pre">User</span></tt> instance corresponding to the currently
+logged in user</li>
+<li><tt class="docutils literal"><span class="pre">domain</span></tt> is the domain beeing modified (<tt class="docutils literal"><span class="pre">Domain</span></tt> instance)</li>
+</ul>
+<p>Callbacks listening to the event must return a list of dictionnaries,
+each one must contain at least three keys:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span><span class="s">&quot;id&quot;</span> <span class="p">:</span> <span class="s">&quot;&lt;the form&#39;s id&gt;&quot;</span><span class="p">,</span>
+ <span class="s">&quot;title&quot;</span> <span class="p">:</span> <span class="s">&quot;&lt;the title used to present the form&gt;&quot;</span><span class="p">,</span>
+ <span class="s">&quot;cls&quot;</span> <span class="p">:</span> <span class="n">TheFormClassName</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="fillaccountinstances">
+<h3>FillAccountInstances<a class="headerlink" href="#fillaccountinstances" title="Permalink to this headline">¶</a></h3>
+<p>When an account is beeing modified, this event is raised to fill extra
+forms.</p>
+<p><em>Callback prototype</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="n">instances</span><span class="p">):</span> <span class="k">pass</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">user</span></tt> is a <tt class="docutils literal"><span class="pre">User</span></tt> instance corresponding to the currently
+logged in user</li>
+<li><tt class="docutils literal"><span class="pre">account</span></tt> is the <tt class="docutils literal"><span class="pre">User</span></tt> instance beeing modified</li>
+<li><tt class="docutils literal"><span class="pre">instances</span></tt> is a dictionnary where the callback will add
+information needed to fill a specific form</li>
+</ul>
+</div>
+<div class="section" id="filldomaininstances">
+<h3>FillDomainInstances<a class="headerlink" href="#filldomaininstances" title="Permalink to this headline">¶</a></h3>
+<p>When a domain is beeing modified, this event is raised to fill extra
+forms.</p>
+<p><em>Callback prototype</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">instances</span><span class="p">):</span> <span class="k">pass</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">user</span></tt> is a <tt class="docutils literal"><span class="pre">User</span></tt> instance corresponding to the currently
+logged in user</li>
+<li><tt class="docutils literal"><span class="pre">domain</span></tt> is the <tt class="docutils literal"><span class="pre">Domain</span></tt> instance beeing modified</li>
+<li><tt class="docutils literal"><span class="pre">instances</span></tt> is a dictionnary where the callback will add
+information needed to fill a specific form</li>
+</ul>
+</div>
+<div class="section" id="getannouncement">
+<h3>GetAnnouncement<a class="headerlink" href="#getannouncement" title="Permalink to this headline">¶</a></h3>
+<p>Some places in the interface let plugins add their own announcement
+(ie. message).</p>
+<p><em>Callback prototype</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">target</span><span class="p">):</span> <span class="k">pass</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">target</span></tt> is a string indicating the place where the announcement
+will appear:</li>
+<li><tt class="docutils literal"><span class="pre">loginpage</span></tt> : corresponds to the login page</li>
+</ul>
+<p>Callbacks listening to this event must return a list of string.</p>
+</div>
+<div class="section" id="getextraroles">
+<span id="id1"></span><h3>GetExtraRoles<a class="headerlink" href="#getextraroles" title="Permalink to this headline">¶</a></h3>
+<p>Let extensions define new administrative roles.</p>
+<p><em>Callback prototype</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">user</span><span class="p">):</span> <span class="k">pass</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">user</span></tt> is a <tt class="docutils literal"><span class="pre">User</span></tt> instance corresponding to the currently
+logged in user</li>
+</ul>
+<p>Callbacks listening to this event must return a list of 2uple (two
+strings) which respect the following format: <tt class="docutils literal"><span class="pre">(value,</span> <span class="pre">label)</span></tt>.</p>
+</div>
+<div class="section" id="getstaticcontent">
+<h3>GetStaticContent<a class="headerlink" href="#getstaticcontent" title="Permalink to this headline">¶</a></h3>
+<p>Let extensions add static content (ie. CSS or javascript) to default
+pages. It is pretty useful for functionalities that don&#8217;t need a
+template but need javascript stuff.</p>
+<p><em>Callback prototype</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">user</span><span class="p">):</span> <span class="k">pass</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">user</span></tt> is a <tt class="docutils literal"><span class="pre">User</span></tt> instance corresponding to the currently
+logged in user</li>
+</ul>
+<p>Callbacks listening to this event must return a list of string.</p>
+</div>
+<div class="section" id="mailboxaliascreated">
+<h3>MailboxAliasCreated<a class="headerlink" href="#mailboxaliascreated" title="Permalink to this headline">¶</a></h3>
+<p>Raised when a new mailbox alias is created.</p>
+<p><em>Callback prototype</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">mailbox_alias</span><span class="p">):</span> <span class="k">pass</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">user</span></tt> is the new domain alias owner (<tt class="docutils literal"><span class="pre">User</span></tt> instance)</li>
+<li><tt class="docutils literal"><span class="pre">mailbox_alias</span></tt> is the new mailbox alias (<tt class="docutils literal"><span class="pre">Alias</span></tt> instance)</li>
+</ul>
+</div>
+<div class="section" id="mailboxaliasdeleted">
+<h3>MailboxAliasDeleted<a class="headerlink" href="#mailboxaliasdeleted" title="Permalink to this headline">¶</a></h3>
+<p>Raised when an existing mailbox alias is about to be deleted.</p>
+<p><em>Callback prototype</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">mailbox_alias</span><span class="p">):</span> <span class="k">pass</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">mailbox_alias</span></tt> is an <tt class="docutils literal"><span class="pre">Alias</span></tt> instance</li>
+</ul>
+</div>
+<div class="section" id="modifymailbox">
+<h3>ModifyMailbox<a class="headerlink" href="#modifymailbox" title="Permalink to this headline">¶</a></h3>
+<p>Raised when an existing mailbox is modified.</p>
+<p><em>Callback prototype</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">newmailbox</span><span class="p">,</span> <span class="n">oldmailbox</span><span class="p">):</span> <span class="k">pass</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">newmailbox</span></tt> is a <tt class="docutils literal"><span class="pre">Mailbox</span></tt> instance containing the new values</li>
+<li><tt class="docutils literal"><span class="pre">oldmailbox</span></tt> is a <tt class="docutils literal"><span class="pre">Mailbox</span></tt> instance containing the old values</li>
+</ul>
+</div>
+<div class="section" id="passwordchange">
+<h3>PasswordChange<a class="headerlink" href="#passwordchange" title="Permalink to this headline">¶</a></h3>
+<p>Raised just before a <em>password change</em> action.</p>
+<p><em>Callback prototype</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">user</span><span class="p">):</span> <span class="k">pass</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">user</span></tt> is a <tt class="docutils literal"><span class="pre">User</span></tt> instance</li>
+</ul>
+<p>Callbacks listening to this event must return a list containing either
+<tt class="docutils literal"><span class="pre">True</span></tt> or <tt class="docutils literal"><span class="pre">False</span></tt>. If at least one <tt class="docutils literal"><span class="pre">True</span></tt> is returned, the
+<em>password change</em> will be cancelled (ie. changing the password for
+this user is disabled).</p>
+</div>
+<div class="section" id="topnotifications">
+<h3>TopNotifications<a class="headerlink" href="#topnotifications" title="Permalink to this headline">¶</a></h3>
+<p>Let extensions add custom content into the top bar.</p>
+<p><em>Callback prototype</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">user</span><span class="p">):</span> <span class="k">pass</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">user</span></tt> is a <tt class="docutils literal"><span class="pre">User</span></tt> instance corresponding to the currently
+logged in user</li>
+</ul>
+<p>Callbacks listening to this event must return a list of string.</p>
+</div>
+<div class="section" id="userlogin">
+<h3>UserLogin<a class="headerlink" href="#userlogin" title="Permalink to this headline">¶</a></h3>
+<p>Raised when a user logs in.</p>
+<p><em>Callback prototype</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">):</span> <span class="k">pass</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="userlogout">
+<h3>UserLogout<a class="headerlink" href="#userlogout" title="Permalink to this headline">¶</a></h3>
+<p>Raised when a user logs out.</p>
+<p><em>Callback prototype</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">request</span><span class="p">):</span> <span class="k">pass</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="usermenudisplay">
+<span id="id2"></span><h3>UserMenuDisplay<a class="headerlink" href="#usermenudisplay" title="Permalink to this headline">¶</a></h3>
+<p>Raised when a user menu is about to be displayed.</p>
+<p><em>Callback prototype</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span> <span class="k">pass</span>
+</pre></div>
+</div>
+<p>The <tt class="docutils literal"><span class="pre">target</span></tt> argument indicates which menu is being
+displayed. Possible values are:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">options_menu</span></tt>: corresponds to the top-right user menu</li>
+<li><tt class="docutils literal"><span class="pre">uprefs_menu</span></tt>: corresponds to the menu bar available inside the
+<em>User preferences</em> page</li>
+<li><tt class="docutils literal"><span class="pre">top_menu</span></tt>: corresponds to the top black bar</li>
+</ul>
+<p>All the callbacks that listen to this event must return a list of
+dictionnaries (corresponding to menu entries). Each dictionnary must
+contain at least the following keys:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span><span class="s">&quot;name&quot;</span> <span class="p">:</span> <span class="s">&quot;a_name_without_spaces&quot;</span><span class="p">,</span>
+ <span class="s">&quot;label&quot;</span> <span class="p">:</span> <span class="n">_</span><span class="p">(</span><span class="s">&quot;The menu label&quot;</span><span class="p">),</span>
+ <span class="s">&quot;url&quot;</span> <span class="p">:</span> <span class="n">reverse</span><span class="p">(</span><span class="s">&quot;your_view&quot;</span><span class="p">)}</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Available events</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#supported-events">Supported events</a><ul>
+<li><a class="reference internal" href="#accountcreated">AccountCreated</a></li>
+<li><a class="reference internal" href="#accountdeleted">AccountDeleted</a></li>
+<li><a class="reference internal" href="#accountmodified">AccountModified</a></li>
+<li><a class="reference internal" href="#extraaccountactions">ExtraAccountActions</a></li>
+<li><a class="reference internal" href="#adminmenudisplay">AdminMenuDisplay</a></li>
+<li><a class="reference internal" href="#cancreate">CanCreate</a></li>
+<li><a class="reference internal" href="#checkextraaccountform">CheckExtraAccountForm</a></li>
+<li><a class="reference internal" href="#createdomain">CreateDomain</a></li>
+<li><a class="reference internal" href="#createmailbox">CreateMailbox</a></li>
+<li><a class="reference internal" href="#deletedomain">DeleteDomain</a></li>
+<li><a class="reference internal" href="#deletemailbox">DeleteMailbox</a></li>
+<li><a class="reference internal" href="#domainaliascreated">DomainAliasCreated</a></li>
+<li><a class="reference internal" href="#domainaliasdeleted">DomainAliasDeleted</a></li>
+<li><a class="reference internal" href="#domainmodified">DomainModified</a></li>
+<li><a class="reference internal" href="#extdisabled">ExtDisabled</a></li>
+<li><a class="reference internal" href="#extenabled">ExtEnabled</a></li>
+<li><a class="reference internal" href="#extraaccountform">ExtraAccountForm</a></li>
+<li><a class="reference internal" href="#extraadmincontent">ExtraAdminContent</a></li>
+<li><a class="reference internal" href="#extradomainform">ExtraDomainForm</a></li>
+<li><a class="reference internal" href="#fillaccountinstances">FillAccountInstances</a></li>
+<li><a class="reference internal" href="#filldomaininstances">FillDomainInstances</a></li>
+<li><a class="reference internal" href="#getannouncement">GetAnnouncement</a></li>
+<li><a class="reference internal" href="#getextraroles">GetExtraRoles</a></li>
+<li><a class="reference internal" href="#getstaticcontent">GetStaticContent</a></li>
+<li><a class="reference internal" href="#mailboxaliascreated">MailboxAliasCreated</a></li>
+<li><a class="reference internal" href="#mailboxaliasdeleted">MailboxAliasDeleted</a></li>
+<li><a class="reference internal" href="#modifymailbox">ModifyMailbox</a></li>
+<li><a class="reference internal" href="#passwordchange">PasswordChange</a></li>
+<li><a class="reference internal" href="#topnotifications">TopNotifications</a></li>
+<li><a class="reference internal" href="#userlogin">UserLogin</a></li>
+<li><a class="reference internal" href="#userlogout">UserLogout</a></li>
+<li><a class="reference internal" href="#usermenudisplay">UserMenuDisplay</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="plugin_api.html"
+                        title="previous chapter">Adding a new plugin</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../additional/migrating.html"
+                        title="next chapter">Migrating from other software</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/extending/events.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../additional/migrating.html" title="Migrating from other software"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="plugin_api.html" title="Adding a new plugin"
+             >previous</a> |</li>
+        <li><a href="../index.html">Modoboa 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Antoine Nguyen.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

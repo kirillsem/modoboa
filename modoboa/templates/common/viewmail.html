@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/viewmail.css" />
+  </head>
+  <body>
+    <div id="table-container">
+      {{ headers }}
+    </div>
+    {{ mailbody|safe }}
+  </body>
+</html>

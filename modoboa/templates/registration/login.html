@@ -1,0 +1,47 @@
+<!DOCTYPE html>{% load i18n libextras %}{% load url from future %}
+<html lang="{{ LANGUAGE_CODE }}">
+  <head>
+    <meta charset="utf-8" />
+    <title>{% trans "Welcome to Modoboa" %}</title>
+    <link rel="icon" type="image/png" href="{{ STATIC_URL }}css/logo-icon.png" />
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/bootstrap-responsive.css" />  
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/login.css" />
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/bootstrap.js"></script>
+    {% url "django.views.i18n.javascript_catalog" as catalog_url %}
+    <script type="text/javascript" src="{{ catalog_url }}"></script>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('#id_username').focus();
+    });
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <div id="box">
+      <div id="logo" class="row">
+        <img src="{% get_modoboa_logo %}" />
+      </div>
+      <form method="post" action="{% url 'modoboa.auth.views.dologin' %}"
+            class="login-form well">
+        {% csrf_token %}
+        {% render_field form.username %}
+        {% render_field form.password %}
+        <input type="hidden" name="next" value="{{ next }}" />
+        <div class="form-actions">
+          <label class="pull-left checkbox" for="id_rememberme">
+            <input type="checkbox" id="id_rememberme" name="rememberme" />{% trans "Remember me" %}
+          </label>
+          <button class="btn btn-primary pull-right" type="submit">{% trans "Log in" %}</button>
+        </div>
+      </form>
+      <div class="login-error">
+        {% if error %}{% alert error "error" %}{% endif %}
+      </div>
+      </div>
+      {% for annoucement in annoucements %}
+      <div class="offset3 span5 well">{{ annoucement|safe }}</div>
+      {% endfor %}
+     </body>
+</html>

@@ -1,0 +1,61 @@
+############
+SMTP servers
+############
+
+.. _postfix:
+
+*******
+Postfix
+*******
+
+This section gives an example about building a simple virtual hosting
+configuration with *Postfix*. Refer to the `official documentation
+<http://www.postfix.org/VIRTUAL_README.html>`_ for more explanation.
+
+Map files
+=========
+
+You first need to create configuration files (or map files) that will
+be used by *postfix* to lookup into Modoboa tables.
+
+To automaticaly generate the requested map files and store them in a
+directory, run the following command::
+
+  $ modoboa-admin.py postfix_maps --dbtype <mysql|postgres> mapfiles
+
+``mapfiles`` is the directory where the files will be stored. Answer the
+few questions and you're done.
+
+Configuration
+=============
+
+Use the following configuration in the */etc/postfix/main.cf* file
+(this is just one possible configuration)::
+
+  # Stuff before
+  mailbox_transport = dovecot
+  dovecot_destination_recipient_limit = 1
+
+  virtual_minimum_uid = <vmail user id> 
+  virtual_gid_maps = static:<vmail group id>
+  virtual_uid_maps = static:<vmail user id>
+  virtual_mailbox_base = /var/vmail
+
+  relay_domains = 
+  virtual_mailbox_domains = mysql:/etc/postfix/sql-domains.cf
+  virtual_alias_domains = mysql:/etc/postfix/sql-domain-aliases.cf
+  virtual_mailbox_maps = mysql:/etc/postfix/sql-mailboxes.cf
+  virtual_alias_maps = mysql:/etc/postfix/sql-aliases.cf,
+        mysql:/etc/postfix/sql-domain-aliases-mailboxes.cf,
+        mysql:/etc/postfix/sql-email2email.cf,
+        mysql:/etc/postfix/sql-catchall-aliases.cf
+
+  # Stuff after
+
+Then, edit the */etc/postfix/master.cf* file and add the following
+definition at the end::
+
+  dovecot   unix  -       n       n       -       -       pipe
+    flags=DRhu user=vmail:vmail argv=/usr/lib/dovecot/deliver -f ${sender} -d ${recipient}
+
+Restart *Postfix*.

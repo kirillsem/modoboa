@@ -1,0 +1,169 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>SMTP servers &mdash; Modoboa 0.9.5 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.9.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Modoboa 0.9.5 documentation" href="../index.html" />
+    <link rel="next" title="IMAP servers" href="imap_servers.html" />
+    <link rel="prev" title="Using plugins" href="../getting_started/plugins.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="imap_servers.html" title="IMAP servers"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../getting_started/plugins.html" title="Using plugins"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Modoboa 0.9.5 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="smtp-servers">
+<h1>SMTP servers<a class="headerlink" href="#smtp-servers" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="postfix">
+<span id="id1"></span><h2>Postfix<a class="headerlink" href="#postfix" title="Permalink to this headline">¶</a></h2>
+<p>This section gives an example about building a simple virtual hosting
+configuration with <em>Postfix</em>. Refer to the <a class="reference external" href="http://www.postfix.org/VIRTUAL_README.html">official documentation</a> for more explanation.</p>
+<div class="section" id="map-files">
+<h3>Map files<a class="headerlink" href="#map-files" title="Permalink to this headline">¶</a></h3>
+<p>You first need to create configuration files (or map files) that will
+be used by <em>postfix</em> to lookup into Modoboa tables.</p>
+<p>To automaticaly generate the requested map files and store them in a
+directory, run the following command:</p>
+<div class="highlight-python"><pre>$ modoboa-admin.py postfix_maps --dbtype &lt;mysql|postgres&gt; mapfiles</pre>
+</div>
+<p><tt class="docutils literal"><span class="pre">mapfiles</span></tt> is the directory where the files will be stored. Answer the
+few questions and you&#8217;re done.</p>
+</div>
+<div class="section" id="configuration">
+<h3>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h3>
+<p>Use the following configuration in the <em>/etc/postfix/main.cf</em> file
+(this is just one possible configuration):</p>
+<div class="highlight-python"><pre># Stuff before
+mailbox_transport = dovecot
+dovecot_destination_recipient_limit = 1
+
+virtual_minimum_uid = &lt;vmail user id&gt;
+virtual_gid_maps = static:&lt;vmail group id&gt;
+virtual_uid_maps = static:&lt;vmail user id&gt;
+virtual_mailbox_base = /var/vmail
+
+relay_domains =
+virtual_mailbox_domains = mysql:/etc/postfix/sql-domains.cf
+virtual_alias_domains = mysql:/etc/postfix/sql-domain-aliases.cf
+virtual_mailbox_maps = mysql:/etc/postfix/sql-mailboxes.cf
+virtual_alias_maps = mysql:/etc/postfix/sql-aliases.cf,
+      mysql:/etc/postfix/sql-domain-aliases-mailboxes.cf,
+      mysql:/etc/postfix/sql-email2email.cf,
+      mysql:/etc/postfix/sql-catchall-aliases.cf
+
+# Stuff after</pre>
+</div>
+<p>Then, edit the <em>/etc/postfix/master.cf</em> file and add the following
+definition at the end:</p>
+<div class="highlight-python"><pre>dovecot   unix  -       n       n       -       -       pipe
+  flags=DRhu user=vmail:vmail argv=/usr/lib/dovecot/deliver -f ${sender} -d ${recipient}</pre>
+</div>
+<p>Restart <em>Postfix</em>.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">SMTP servers</a><ul>
+<li><a class="reference internal" href="#postfix">Postfix</a><ul>
+<li><a class="reference internal" href="#map-files">Map files</a></li>
+<li><a class="reference internal" href="#configuration">Configuration</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../getting_started/plugins.html"
+                        title="previous chapter">Using plugins</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="imap_servers.html"
+                        title="next chapter">IMAP servers</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/integration/smtp_servers.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="imap_servers.html" title="IMAP servers"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../getting_started/plugins.html" title="Using plugins"
+             >previous</a> |</li>
+        <li><a href="../index.html">Modoboa 0.9.5 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,314 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>IMAP servers &mdash; Modoboa 0.9.5 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.9.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Modoboa 0.9.5 documentation" href="../index.html" />
+    <link rel="next" title="Web servers" href="web_servers.html" />
+    <link rel="prev" title="SMTP servers" href="smtp_servers.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="web_servers.html" title="Web servers"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="smtp_servers.html" title="SMTP servers"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Modoboa 0.9.5 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="imap-servers">
+<h1>IMAP servers<a class="headerlink" href="#imap-servers" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="dovecot">
+<span id="id1"></span><h2>Dovecot<a class="headerlink" href="#dovecot" title="Permalink to this headline">¶</a></h2>
+<p>Modoboa works better with Dovecot 2.0 so the following documentation
+is suitable for this combination.</p>
+<p>In this section, we assume dovecot&#8217;s configuration resides in
+<em>/etc/dovecot</em>, all pathes will be relative to this directory.</p>
+<div class="section" id="mailboxes">
+<h3>Mailboxes<a class="headerlink" href="#mailboxes" title="Permalink to this headline">¶</a></h3>
+<p>First, edit the <em>conf.d/10-mail.conf</em> and set the <tt class="docutils literal"><span class="pre">mail_location</span></tt>
+variable:</p>
+<div class="highlight-python"><pre># maildir
+mail_location = maildir:~/.maildir</pre>
+</div>
+<p>Then, edit the <tt class="docutils literal"><span class="pre">inbox</span></tt> namespace and add the following lines:</p>
+<div class="highlight-python"><pre>mailbox Drafts {
+  auto = create
+  special_use = \Drafts
+}
+mailbox Junk {
+  auto = create
+  special_use = \Junk
+}
+mailbox Sent {
+  auto = create
+  special_use = \Sent
+}
+mailbox Trash {
+  auto = create
+  special_use = \Trash
+}</pre>
+</div>
+<p>It ensures all the special mailboxes will be automaticaly created for
+new accounts.</p>
+</div>
+<div class="section" id="authentication">
+<h3>Authentication<a class="headerlink" href="#authentication" title="Permalink to this headline">¶</a></h3>
+<p>To make the authentication work, edit the <em>conf.d/10-auth.conf</em> and
+uncomment the following line at the end:</p>
+<div class="highlight-python"><pre>#!include auth-system.conf.ext
+!include auth-sql.conf.ext
+#!include auth-ldap.conf.ext
+#!include auth-passwdfile.conf.ext
+#!include auth-checkpassword.conf.ext
+#!include auth-vpopmail.conf.ext
+#!include auth-static.conf.ext</pre>
+</div>
+<p>Then, edit the <em>conf.d/auth-sql.conf.ext</em> file and add the following
+content inside:</p>
+<div class="highlight-python"><pre>passdb sql {
+  driver = sql
+  # Path for SQL configuration file, see example-config/dovecot-sql.conf.ext
+  args = /etc/dovecot/dovecot-sql.conf.ext
+}
+
+userdb sql {
+  driver = sql
+  args = /etc/dovecot/dovecot-sql.conf.ext
+}</pre>
+</div>
+<p>Make sure to activate only one backend (per type) inside your configuration
+(just comment the other ones).</p>
+<p><em>MySQL</em> users, edit the <em>dovecot-sql.conf.ext</em> file and modify following lines:</p>
+<div class="highlight-python"><pre>driver = mysql
+
+connect = host=&lt;mysqld socket&gt; dbname=&lt;database&gt; user=&lt;user&gt; password=&lt;password&gt;
+
+default_pass_scheme = CRYPT
+
+password_query = SELECT email AS user, password FROM admin_user WHERE email='%u' and is_active=1
+
+user_query = SELECT '&lt;mailboxes storage directory&gt;/%d/%n' AS home, &lt;uid&gt; as uid, &lt;gid&gt; as gid, concat('*:bytes=', mb.quota, 'M') AS quota_rule FROM admin_mailbox mb INNER JOIN admin_domain dom ON mb.domain_id=dom.id WHERE mb.address='%n' AND dom.name='%d'
+
+iterate_query = SELECT email AS username FROM admin_user</pre>
+</div>
+<p><em>PostgreSQL</em> users, here is your version:</p>
+<div class="highlight-python"><pre>driver = postgresql
+
+connect = host=&lt;postgres socket&gt; dbname=&lt;database&gt; user=&lt;user&gt; password=&lt;password&gt;
+
+default_pass_scheme = CRYPT
+
+password_query = SELECT email AS user, password FROM admin_user WHERE email='%u' and is_active
+
+user_query = SELECT '&lt;mailboxes storage directory&gt;/%d/%n' AS home, &lt;uid&gt; as uid, &lt;gid&gt; as gid, '*:bytes=' || mb.quota || 'M' AS quota_rule FROM admin_mailbox mb INNER JOIN admin_domain dom ON mb.domain_id=dom.id WHERE mb.address='%n' AND dom.name='%d'
+
+iterate_query = SELECT email AS username FROM admin_user</pre>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Replace values between <tt class="docutils literal"><span class="pre">&lt;&gt;</span></tt> with yours.</p>
+</div>
+</div>
+<div class="section" id="lda">
+<h3>LDA<a class="headerlink" href="#lda" title="Permalink to this headline">¶</a></h3>
+<p>The LDA is activated by default but you must define a <em>postmaster</em>
+address. Open the <em>conf.d/15-lda.conf</em> file modify the following line:</p>
+<div class="highlight-python"><pre>postmaster_address = postmaster@&lt;domain&gt;</pre>
+</div>
+</div>
+<div class="section" id="quota">
+<h3>Quota<a class="headerlink" href="#quota" title="Permalink to this headline">¶</a></h3>
+<p>Modoboa lets adminstrators define per-domain and/or per-account limits
+(quota). It also lists the current quota usage of each account. Those
+features require Dovecot to be configured in a specific way.</p>
+<p>Inside <em>conf.d/10-mail.conf</em>, add the <tt class="docutils literal"><span class="pre">quota</span></tt> plugin to the default
+activated ones:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">mail_plugins</span> <span class="o">=</span> <span class="n">quota</span>
+</pre></div>
+</div>
+<p>Inside <em>conf.d/20-imap.conf</em>, activate the <tt class="docutils literal"><span class="pre">imap_quota</span></tt> plugin:</p>
+<div class="highlight-python"><pre>protocol imap {
+  # ...
+
+  mail_plugins = $mail_plugins imap_quota
+
+  # ...
+}</pre>
+</div>
+<p>Inside <em>dovecot.conf</em>, activate the quota SQL dictionary backend:</p>
+<div class="highlight-python"><pre>dict {
+  quota = &lt;driver&gt;:/etc/dovecot/dovecot-dict-sql.conf.ext
+}</pre>
+</div>
+<p>Inside <em>conf.d/90-quota.conf</em>, activate the <em>quota dictionary</em> backend:</p>
+<div class="highlight-python"><pre>plugin {
+  quota = dict:User quota::proxy::quota
+}</pre>
+</div>
+<p>It will tell Dovecot to keep quota usage in the SQL dictionary.</p>
+<p>Finally, edit the <em>dovecot-dict-sql.conf</em> file and put the following content inside:</p>
+<div class="highlight-python"><pre>connect = host=&lt;db host&gt; dbname=&lt;db name&gt; user=&lt;db user&gt; password=&lt;password&gt;
+
+map {
+  pattern = priv/quota/storage
+  table = admin_quota
+  username_field = username
+  value_field = bytes
+}
+map {
+  pattern = priv/quota/messages
+  table = admin_quota
+  username_field = username
+  value_field = messages
+}</pre>
+</div>
+</div>
+<div class="section" id="managesieve-sieve">
+<h3>ManageSieve/Sieve<a class="headerlink" href="#managesieve-sieve" title="Permalink to this headline">¶</a></h3>
+<p>Modoboa lets users define filtering rules from the web interface. To
+do so, it requires <em>ManageSieve</em> to be activated on your server.</p>
+<p>Inside <em>conf.d/20-managesieve.conf</em>, make sure the following lines are
+uncommented:</p>
+<div class="highlight-python"><pre>protocols = $protocols sieve
+
+service managesieve-login {
+  # ...
+}
+
+service managesieve {
+  # ...
+}
+
+protocol sieve {
+  # ...
+}</pre>
+</div>
+<p>Messages filtering using Sieve is done by the LDA.</p>
+<p>Inside <em>conf.d/15-lda.conf</em>, activate the <tt class="docutils literal"><span class="pre">sieve</span></tt> plugin like this:</p>
+<div class="highlight-python"><pre>protocol lda {
+  # Space separated list of plugins to load (default is global mail_plugins).
+  mail_plugins = $mail_plugins sieve
+}</pre>
+</div>
+<p>Finally, configure the <tt class="docutils literal"><span class="pre">sieve</span></tt> plugin by editing the
+<em>conf.d/90-sieve.conf</em> file. Put the follwing content inside:</p>
+<div class="highlight-python"><pre>plugin {
+  # Location of the active script. When ManageSieve is used this is actually
+  # a symlink pointing to the active script in the sieve storage directory.
+  sieve = ~/.dovecot.sieve
+
+  #
+  # The path to the directory where the personal Sieve scripts are stored. For
+  # ManageSieve this is where the uploaded scripts are stored.
+  sieve_dir = ~/sieve
+}</pre>
+</div>
+<p>Restart <em>Dovecot</em>.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">IMAP servers</a><ul>
+<li><a class="reference internal" href="#dovecot">Dovecot</a><ul>
+<li><a class="reference internal" href="#mailboxes">Mailboxes</a></li>
+<li><a class="reference internal" href="#authentication">Authentication</a></li>
+<li><a class="reference internal" href="#lda">LDA</a></li>
+<li><a class="reference internal" href="#quota">Quota</a></li>
+<li><a class="reference internal" href="#managesieve-sieve">ManageSieve/Sieve</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="smtp_servers.html"
+                        title="previous chapter">SMTP servers</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="web_servers.html"
+                        title="next chapter">Web servers</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/integration/imap_servers.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="web_servers.html" title="Web servers"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="smtp_servers.html" title="SMTP servers"
+             >previous</a> |</li>
+        <li><a href="../index.html">Modoboa 0.9.5 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Antoine Nguyen.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

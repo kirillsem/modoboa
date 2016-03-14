@@ -1,0 +1,211 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Installation &mdash; Modoboa 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Modoboa 1.0.0 documentation" href="../index.html" />
+    <link rel="next" title="Upgrading an existing installation" href="upgrade.html" />
+    <link rel="prev" title="Modoboa’s documentation!" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="upgrade.html" title="Upgrading an existing installation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../index.html" title="Modoboa’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Modoboa 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="installation">
+<span id="id1"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><a class="reference external" href="http://python.org/">Python version 2.6+</a></li>
+<li><a class="reference external" href="http://docs.djangoproject.com/en/dev/intro/install/#intro-install">Django version 1.5+</a></li>
+<li><a class="reference external" href="http://south.aeracode.org/">south version 0.7+</a></li>
+<li><a class="reference external" href="http://codespeak.net/lxml/">lxml python module</a></li>
+<li><a class="reference external" href="http://www.dlitz.net/software/pycrypto/">pycrypto python module</a></li>
+<li><a class="reference external" href="http://oss.oetiker.ch/rrdtool/">rrdtool python binding</a></li>
+<li><a class="reference external" href="http://pypi.python.org/pypi/sievelib">sievelib python module</a></li>
+<li><a class="reference external" href="http://pypi.python.org/pypi/chardet">chardet python module</a></li>
+<li><a class="reference external" href="http://pypi.python.org/pypi/argparse">argparse python module</a></li>
+<li><a class="reference external" href="https://github.com/etianen/django-reversion">reversion python module</a></li>
+</ul>
+</div>
+<div class="section" id="get-modoboa">
+<span id="id2"></span><h2>Get Modoboa<a class="headerlink" href="#get-modoboa" title="Permalink to this headline">¶</a></h2>
+<p>You can choose between two options:</p>
+<ul class="simple">
+<li>Use the Python package available on the <a class="reference external" href="http://pypi.python.org/pypi">PyPI</a></li>
+<li>Download the sources tarball</li>
+</ul>
+<p>The easiest one is to install it from the <em>PyPI</em>. Just run the
+following command and you&#8217;re done:</p>
+<div class="highlight-python"><pre>$ pip install modoboa</pre>
+</div>
+<p>If you prefer to use the tarball, download the latest one and run the
+following procedure:</p>
+<div class="highlight-python"><pre>$ tar xzf modoboa-&lt;version&gt;.tar.gz
+$ cd modoboa-&lt;version&gt;
+$ python setup.py install</pre>
+</div>
+<p>All dependencies will be installed regardless the way you chose. The
+only exception concerns the RRDtool binding because there isn&#8217;t any
+python package available, it is directly provided with the official
+tarball.</p>
+<p>Fortunately, all major distributions include a ready-to-use
+package. On Debian/Ubuntu:</p>
+<div class="highlight-python"><pre>$ apt-get install libcairo2-dev libpango1.0-dev librrd-dev
+$ pip install python-rrdtool</pre>
+</div>
+</div>
+<div class="section" id="database">
+<span id="id3"></span><h2>Database<a class="headerlink" href="#database" title="Permalink to this headline">¶</a></h2>
+<p>Thanks to <em>django</em>, Modoboa supports several databases. Depending on
+the one you will use, you must install the appropriate python package:</p>
+<ul class="simple">
+<li><a class="reference external" href="http://mysql-python.sourceforge.net/">mysqldb</a> for <a class="reference external" href="http://www.mysql.com">MySQL</a></li>
+<li><a class="reference external" href="http://initd.org/psycopg/">psycopg2</a> for <a class="reference external" href="http://www.postgresql.org">PostgreSQL</a></li>
+</ul>
+<p>Then, create a user and a database that will be used by Modoboa. Make
+sure your database is using UTF8 as a default charset.</p>
+</div>
+<div class="section" id="deployment">
+<span id="id4"></span><h2>Deployment<a class="headerlink" href="#deployment" title="Permalink to this headline">¶</a></h2>
+<p><cite>modoboa-admin.py</cite>, a command line tool, let you deploy a
+<em>ready-to-use</em> Modoboa site using only one instruction:</p>
+<div class="highlight-python"><pre>$ modoboa-admin.py deploy modoboa_example --syncdb --collectstatic [--with-amavis]</pre>
+</div>
+<p>Just answer the few questions and you&#8217;re done. You can now go to the
+<a class="reference internal" href="#first-use"><em>First use</em></a> section.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The <cite>&#8211;with-amavis</cite> option must be set only if you intend to use
+the <a class="reference internal" href="plugins.html#amavis-frontend"><em>Amavisd-new frontend</em></a>.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you plan to serve Modoboa using a URL prefix, you must change the
+value of the <tt class="docutils literal"><span class="pre">LOGIN_URL</span></tt> parameter to <tt class="docutils literal"><span class="pre">LOGIN_URL</span> <span class="pre">=</span> <span class="pre">'/&lt;prefix&gt;/accounts/login/'</span></tt>.</p>
+</div>
+</div>
+<div class="section" id="first-use">
+<span id="id5"></span><h2>First use<a class="headerlink" href="#first-use" title="Permalink to this headline">¶</a></h2>
+<p>Your installation should now have a default super administrator:</p>
+<ul class="simple">
+<li>Username: <tt class="docutils literal"><span class="pre">admin</span></tt></li>
+<li>Password: <tt class="docutils literal"><span class="pre">password</span></tt></li>
+</ul>
+<p>It is <strong>strongly</strong> recommended to change this password the first time
+you log into Modoboa.</p>
+<p>To check if your installation works, just launch the embedded HTTP
+server:</p>
+<div class="highlight-python"><pre>$ python manage.py runserver</pre>
+</div>
+<p>You should be able to access Modoboa at <a class="reference external" href="http://locahost:8000/">http://locahost:8000/</a>.</p>
+<p>For a production environnement, we recommend using a stable webserver
+like <a class="reference internal" href="../integration/web_servers.html#apache2"><em>Apache2</em></a> or <a class="reference internal" href="../integration/web_servers.html#nginx-label"><em>Nginx</em></a>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Installation</a><ul>
+<li><a class="reference internal" href="#requirements">Requirements</a></li>
+<li><a class="reference internal" href="#get-modoboa">Get Modoboa</a></li>
+<li><a class="reference internal" href="#database">Database</a></li>
+<li><a class="reference internal" href="#deployment">Deployment</a></li>
+<li><a class="reference internal" href="#first-use">First use</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../index.html"
+                        title="previous chapter">Modoboa&#8217;s documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="upgrade.html"
+                        title="next chapter">Upgrading an existing installation</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/getting_started/install.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="upgrade.html" title="Upgrading an existing installation"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../index.html" title="Modoboa’s documentation!"
+             >previous</a> |</li>
+        <li><a href="../index.html">Modoboa 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Antoine Nguyen.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

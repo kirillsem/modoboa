@@ -1,0 +1,256 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Web servers &mdash; Modoboa 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Modoboa 1.0.0 documentation" href="../index.html" />
+    <link rel="next" title="Adding a new plugin" href="../extending/plugin_api.html" />
+    <link rel="prev" title="Dovecot and Postfix" href="imap_and_smtp.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../extending/plugin_api.html" title="Adding a new plugin"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="imap_and_smtp.html" title="Dovecot and Postfix"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Modoboa 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="web-servers">
+<span id="webservers"></span><h1>Web servers<a class="headerlink" href="#web-servers" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="apache2">
+<span id="id1"></span><h2>Apache2<a class="headerlink" href="#apache2" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="mod-wgsi">
+<h3>mod_wgsi<a class="headerlink" href="#mod-wgsi" title="Permalink to this headline">¶</a></h3>
+<p>First, make sure that <em>mod_wsgi</em> is installed on your server.</p>
+<p>Create a new virtualhost in your Apache configuration and put the
+following content inside:</p>
+<div class="highlight-python"><pre>&lt;VirtualHost *:80&gt;
+  ServerName &lt;your value&gt;
+  DocumentRoot &lt;path to your site's dir&gt;
+
+  Alias /media/ &lt;path to your site's dir&gt;/media/
+  &lt;Directory &lt;path to your site's dir&gt;/media&gt;
+    Order deny,allow
+    Allow from all
+  &lt;/Directory&gt;
+
+  Alias /sitestatic/ &lt;path to your site's dir&gt;/sitestatic/
+  &lt;Directory &lt;path to your site's dir&gt;/sitestatic&gt;
+    Order deny,allow
+    Allow from all
+  &lt;/Directory&gt;
+
+  WSGIScriptAlias / &lt;path to your site's dir&gt;/wsgi.py
+&lt;/VirtualHost&gt;</pre>
+</div>
+<p>This is just one possible configuration.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><em>Django</em> 1.3 users, please consult this <a class="reference external" href="https://docs.djangoproject.com/en/1.3/howto/deployment/modwsgi/">page</a>,
+it contains an example <em>wsgi.py</em> file.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">You will certainly need more configuration in order to launch
+Apache.</p>
+</div>
+</div>
+<div class="section" id="mod-python">
+<h3>mod_python<a class="headerlink" href="#mod-python" title="Permalink to this headline">¶</a></h3>
+<p>First, make sure that <em>mod_python</em> is installed on your server.</p>
+<p>Create a new virtualhost in your Apache configuration and put the
+following content inside:</p>
+<div class="highlight-python"><pre>&lt;VirtualHost *:80&gt;
+  ServerName &lt;your value&gt;
+  DocumentRoot &lt;path to your site's dir&gt;
+
+  &lt;Location "/"&gt;
+    SetHandler mod_python
+    PythonHandler django.core.handlers.modpython
+    PythonPath "['&lt;path to directory that contains your site's dir&gt;'] + sys.path"
+    SetEnv DJANGO_SETTINGS_MODULE &lt;your site's name&gt;.settings
+  &lt;/Location&gt;
+
+  Alias "/sitestatic" "&lt;path to your site's dir&gt;/sitestatic"
+  &lt;Location "/sitestatic/"&gt;
+    SetHandler None
+  &lt;/Location&gt;
+
+  Alias "/media" "&lt;path to your site's dir&gt;/media"
+  &lt;Location "/media/"&gt;
+    SetHandler None
+  &lt;/Location&gt;
+&lt;/VirtualHost&gt;</pre>
+</div>
+<p>This is just one possible configuration.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">You will certainly need more configuration in order to launch
+Apache.</p>
+</div>
+</div>
+</div>
+<div class="section" id="nginx">
+<span id="nginx-label"></span><h2>Nginx<a class="headerlink" href="#nginx" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://nginx.org/">Nginx</a> is a really fast HTTP server. Associated
+with <a class="reference external" href="http://gunicorn.org/">Green Unicorn</a>, it gives you one of the
+best setup to serve python/Django applications. Modoboa&#8217;s
+performances are really good with this configuration.</p>
+<p>To use this setup, first download and install those softwares
+(<a class="reference external" href="http://gunicorn.org/install.html">Install gunicorn</a> and <a class="reference external" href="http://wiki.nginx.org/Install">install
+nginx</a>).</p>
+<p>Then, use the following sample <em>gunicorn</em> configuration (create a new
+file named <em>gunicorn.conf.py</em> inside Modoboa&#8217;s root dir):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">backlog</span> <span class="o">=</span> <span class="mi">2048</span>
+<span class="n">bind</span> <span class="o">=</span> <span class="s">&quot;unix:/var/run/gunicorn/modoboa.sock&quot;</span>
+<span class="n">pidfile</span> <span class="o">=</span> <span class="s">&quot;/var/run/gunicorn/modoboa.pid&quot;</span>
+<span class="n">daemon</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">debug</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="n">workers</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">logfile</span> <span class="o">=</span> <span class="s">&quot;/var/log/gunicorn/modoboa.log&quot;</span>
+<span class="n">loglevel</span> <span class="o">=</span> <span class="s">&quot;info&quot;</span>
+</pre></div>
+</div>
+<p>To start gunicorn, execute the following commands:</p>
+<div class="highlight-python"><pre>$ cd &lt;modoboa dir&gt;
+$ gunicorn_django -c gunicorn.conf.py</pre>
+</div>
+<p>Now the <em>nginx</em> part. Just create a new virtual host and use the
+following configuration:</p>
+<div class="highlight-python"><pre>upstream modoboa {
+      server      unix:/var/run/gunicorn/modoboa.sock fail_timeout=0;
+}
+
+server {
+      listen 443;
+      server_name &lt;host fqdn&gt;;
+      root &lt;modoboa's root dir&gt;;
+
+      access_log  /var/log/nginx/&lt;host fqdn&gt;.access.log;
+      error_log /var/log/nginx/&lt;host fqdn&gt;.error.log;
+
+      location /sitestatic/ {
+              autoindex on;
+      }
+
+      location /media/ {
+              autoindex on;
+      }
+
+      location / {
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header Host $http_host;
+              proxy_redirect off;
+              proxy_set_header X-Forwarded-Protocol ssl;
+              proxy_pass http://modoboa;
+      }
+}</pre>
+</div>
+<p>Paste this content to your configuration (replace values between
+<tt class="docutils literal"><span class="pre">&lt;&gt;</span></tt> with yours), restart <em>nginx</em> and enjoy a really fast
+application!</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Web servers</a><ul>
+<li><a class="reference internal" href="#apache2">Apache2</a><ul>
+<li><a class="reference internal" href="#mod-wgsi">mod_wgsi</a></li>
+<li><a class="reference internal" href="#mod-python">mod_python</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#nginx">Nginx</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="imap_and_smtp.html"
+                        title="previous chapter">Dovecot and Postfix</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../extending/plugin_api.html"
+                        title="next chapter">Adding a new plugin</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/integration/web_servers.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../extending/plugin_api.html" title="Adding a new plugin"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="imap_and_smtp.html" title="Dovecot and Postfix"
+             >previous</a> |</li>
+        <li><a href="../index.html">Modoboa 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>
